@@ -93,6 +93,7 @@ if (isset($_GET['apikey'])) {
 		
 } else {
 	$response = array ('error' => true, 'message' => 'No API key given');
+	http_response_code(400);
 	// TODO: check session
 }
 echo json_encode($response);
