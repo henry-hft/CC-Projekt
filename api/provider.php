@@ -36,6 +36,7 @@ if (isset($_GET['apikey'])) {
 									$providerName = $stmt->fetchColumn();
 								} else {
 									$response = array ('error' => true, 'message' => 'Invalid/unknown provider');
+									http_response_code(400);
 									exit(json_encode($response));
 								}		
 							} else { // all providers
@@ -76,14 +77,18 @@ if (isset($_GET['apikey'])) {
 							if (!isset($providerName)) {
 								$response += $providerArray;
 							}
+							http_response_code(200);
 						} else {
 							$response = array ('error' => true, 'message' => 'Invalid request method');
+							http_response_code(400);
 						}
 					} else { // Invalid/unknown API Key
 						$response = array ('error' => true, 'message' => 'Authentification failed');
+						http_response_code(400);
 					}
 			}else{
 				$response = array ('error' => true, 'message' => 'Invalid/unknown API key');
+				http_response_code(400);
 			}
 		
 } else {
