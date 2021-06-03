@@ -14,35 +14,39 @@ if (isset($_GET['apikey'])) {
 			$database = new Database();
 			$db = $database->getConnection();
 	
-			$query = "SELECT enabled FROM users WHERE apikey=:apikey";
+			$query = "SELECT id, enabled FROM users WHERE apikey=:apikey";
 			$stmt = $db->prepare($query);
 	
 			$stmt->bindParam(":apikey", $_GET['apikey']);
 			$stmt->execute();
-			//$stmt->store_result();
 	
 			if ($stmt->rowCount() == 1) { // check if API key exists
-				$stmt->bindColumn(1, $enabled);
+				$stmt->bindColumn('id', $userid);
+				$stmt->bindColumn('enabled', $enabled);
 				$stmt->fetch(); 
 					if ($enabled == "1") { // check if the account of owner of the API key is enabled
 						if ($_SERVER['REQUEST_METHOD'] === 'GET') { // get server(s)
-							$query = "SELECT * FROM providers";
-							$stmt = $db->prepare($query);
-							$stmt->execute();
-							$provider = [];
 							if (isset($_GET['name'])) { // only one provider
-								if (in_array(strtolower($_GET['name']), $providers)) { // check if provider is valid
-									$providerGiven = true;
+								$query = "SELECT name FROM providers WHERE name LIKE :providerName";
+								$stmt = $db->prepare($query);
+								$stmt->bindParam(":providerName", $_GET['name']);
+								$stmt->execute();
+								
+								if ($stmt->rowCount() == 1) { // check if provider is valid
+									$providerName = $stmt->fetchColumn();
 								} else {
-									$providerGiven = false;
-									$response = array ('success' => false, 'message' => 'Invalid/unknown provider');
+									$response = array ('error' => true, 'message' => 'Invalid/unknown provider');
 									exit(json_encode($response));
 								}		
 							} else { // all providers
-								$providerGiven = false;
+							
 							}		
 							
-							$response = array('success' => true);
+							$query = "SELECT * FROM providers";
+							$stmt = $db->prepare($query);
+							$stmt->execute();
+							
+							$response = array('error' => false);
 							$providerArray = array('proivders' => array());
 							
 							while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -51,10 +55,9 @@ if (isset($_GET['apikey'])) {
 								} else {
 									$enabled = false;
 								}
-								if($providerGiven){
-									if (strtolower($_GET['name']) == strtolower($row['name'])) {
+								if(isset($providerName)){
+									if ($providerName == $row['name']) {
 										$response += array("provider" => array(
-														"id" => $row['id'],
 														"name" => $row['name'],
 														"baseurl" => $row['baseurl'],
 														"enabled" => $enabled
@@ -64,28 +67,27 @@ if (isset($_GET['apikey'])) {
 									}
 								} else {
 									$providerArray['proivders'][] = array(
-														"id" => $row['id'],
 														"name" => $row['name'],
 														"baseurl" => $row['baseurl'],
 														"enabled" => $enabled
 												);
 								}
 							}
-							if (!$providerGiven) {
+							if (!isset($providerName)) {
 								$response += $providerArray;
 							}
 						} else {
-							$response = array ('success' => false, 'message' => 'Invalid request method');
+							$response = array ('error' => true, 'message' => 'Invalid request method');
 						}
 					} else { // Invalid/unknown API Key
-						$response = array ('success' => false, 'message' => 'Authentification failed');
+						$response = array ('error' => true, 'message' => 'Authentification failed');
 					}
 			}else{
-				$response = array ('success' => false, 'message' => 'Invalid/unknown API key');
+				$response = array ('error' => true, 'message' => 'Invalid/unknown API key');
 			}
 		
 } else {
-	$response = array ('success' => false, 'message' => 'No API key given');
+	$response = array ('error' => true, 'message' => 'No API key given');
 	// TODO: check session
 }
 echo json_encode($response);
