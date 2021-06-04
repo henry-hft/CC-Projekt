@@ -31,7 +31,7 @@ if(!empty($_GET['method'])){
 					$stmt->execute();
 								
 					if ($stmt->rowCount() == 0) {
-						$query = "INSERT INTO users SET username=:username, email=:email, password=:password, registrationDate=:registrationDate, apikey=:apikey";
+						$query = "INSERT INTO users SET username=:username, email=:email, password=:password, registrationDate=:registrationDate";
 						$stmt = $db->prepare($query);
 						$stmt->bindParam(':username', $_GET['username']);
 						$stmt->bindParam(':email', $_GET['email']);
@@ -39,9 +39,7 @@ if(!empty($_GET['method'])){
 						$stmt->bindParam(':password', $password_hash);
 						$registrationDate = time();
 						$stmt->bindParam(':registrationDate', $registrationDate);
-						$apikey = "123456789";
-						$stmt->bindParam(':apikey', $apikey);
-
+						
 						if ($stmt->execute()) {
 							$response = array("error" => false, "message" => "User was successfully registered");
 							http_response_code(200);
