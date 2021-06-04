@@ -1,23 +1,37 @@
 <?php
+include_once './config/core.php';
+include_once './config/database.php';
+
+// JWT library
+include_once './libs/php-jwt-master/src/BeforeValidException.php';
+include_once './libs/php-jwt-master/src/ExpiredException.php';
+include_once './libs/php-jwt-master/src/SignatureInvalidException.php';
+include_once './libs/php-jwt-master/src/JWT.php';
+use \Firebase\JWT\JWT;
+
 // required headers
-header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Origin: * ");
 header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Methods: GET, DELETE, PUT");
+header("Access-Control-Max-Age: 3600");
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-include_once 'config/core.php';
-include_once 'config/database.php';
-
-session_start();
-
-if (isset($_GET['apikey'])) {
-
+$data = json_decode(file_get_contents("php://input"));
+if(!empty($_SERVER['HTTP_AUTHORIZATION'])){
+	$arr = explode(" ", $_SERVER['HTTP_AUTHORIZATION']);
+	$jwt = $arr[1];
+	if (!empty($jwt)) {
+		try {
 			// instantiate database and server object
 			$database = new Database();
 			$db = $database->getConnection();
 	
-			$query = "SELECT id, enabled FROM users WHERE apikey=:apikey";
-			$stmt = $db->prepare($query);
+			$decoded = JWT::decode($jwt, $secret_key, array('HS256'));
 	
-			$stmt->bindParam(":apikey", $_GET['apikey']);
+			$query = "SELECT id, enabled FROM users WHERE id=:userid";
+			$stmt = $db->prepare($query);
+			$userid = $decoded->data->id;
+			$stmt->bindParam(":userid", $userid);
 			$stmt->execute();
 	
 			if ($stmt->rowCount() == 1) { // check if API key exists
@@ -230,10 +244,15 @@ if (isset($_GET['apikey'])) {
 				http_response_code(400);
 			}
 		
+		} catch (Exception $e) {
+			$response = array ('error' => true, 'message' => 'Authentication failed');
+			http_response_code(401);
+		}
+	} else {
+		$response = array ('error' => true, 'message' => 'Missing access token');
+	}	
 } else {
-	$response = array ('error' => true, 'message' => 'No API key given');
-	http_response_code(400);
-	// TODO: check session
+	$response = array ('error' => true, 'message' => 'Missing access token');
 }
 echo json_encode($response);
 
