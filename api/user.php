@@ -2,25 +2,27 @@
 include_once './config/core.php';
 include_once './config/database.php';
 
+// JWT library
 include_once './libs/php-jwt-master/src/BeforeValidException.php';
 include_once './libs/php-jwt-master/src/ExpiredException.php';
 include_once './libs/php-jwt-master/src/SignatureInvalidException.php';
 include_once './libs/php-jwt-master/src/JWT.php';
 use \Firebase\JWT\JWT;
 
+// required headers
 header("Access-Control-Allow-Origin: * ");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-if(isset($_GET['method'])){
+if(!empty($_GET['method'])){
 	$database = new Database();
 	$db = $database->getConnection();
 
 	if($_SERVER['REQUEST_METHOD'] === 'POST'){
 		if ($_GET['method'] == "register") {
-			if(isset($_GET['username']) AND isset($_GET['email']) AND isset($_GET['password'])){
+			if(!empty($_GET['username']) AND !empty($_GET['email']) AND !empty($_GET['password'])){
 				if (filter_var($_GET['email'], FILTER_VALIDATE_EMAIL)) {
 					$query = "SELECT NULL FROM users WHERE username=:username OR email=:email";
 					$stmt = $db->prepare($query);
@@ -60,8 +62,8 @@ if(isset($_GET['method'])){
 				http_response_code(400);
 			}
 		} else if ($_GET['method'] == "login") {
-			if((isset($_GET['username']) OR isset($_GET['email'])) AND isset($_GET['password'])){
-				if (isset($_GET['username'])) { // log in with username
+			if((!empty($_GET['username']) OR !empty($_GET['email'])) AND !empty($_GET['password'])){
+				if (!empty($_GET['username'])) { // log in with username
 					$query = "SELECT * FROM users WHERE username=:username";
 					$stmt = $db->prepare($query);
 					$stmt->bindParam(":username", $_GET['username']);
@@ -79,8 +81,8 @@ if(isset($_GET['method'])){
 						$issuer_claim = "CLOUDCOMPUTING";
 						$audience_claim = "USER";
 						$issuedat_claim = time(); // issued at
-						$notbefore_claim = $issuedat_claim + 10; //not before in seconds
-						$expire_claim = $issuedat_claim + 60; // expire time in seconds
+						$notbefore_claim = $issuedat_claim + 0; //not before in seconds
+						$expire_claim = $issuedat_claim + 3600; // expire time in seconds
 						
 						$token = array(
 							"iss" => $issuer_claim,
@@ -89,10 +91,7 @@ if(isset($_GET['method'])){
 							"nbf" => $notbefore_claim,
 							"exp" => $expire_claim,
 							"data" => array(
-								"id" => $row['id'],
-								"username" => $row['username'],
-								"email" => $row['email'],
-								"enabled" => $row['enabled']
+								"id" => $row['id']
 						));
 
 						$jwt = JWT::encode($token, $secret_key);
