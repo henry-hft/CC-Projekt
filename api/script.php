@@ -1,23 +1,37 @@
 <?php
+include_once './config/core.php';
+include_once './config/database.php';
+
+// JWT library
+include_once './libs/php-jwt-master/src/BeforeValidException.php';
+include_once './libs/php-jwt-master/src/ExpiredException.php';
+include_once './libs/php-jwt-master/src/SignatureInvalidException.php';
+include_once './libs/php-jwt-master/src/JWT.php';
+use \Firebase\JWT\JWT;
+
 // required headers
-header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Origin: * ");
 header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Methods: GET, POST, DELETE, PUT");
+header("Access-Control-Max-Age: 3600");
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-include_once 'config/core.php';
-include_once 'config/database.php';
-
-session_start();
-
-if (isset($_GET['apikey'])) {
-
+$data = json_decode(file_get_contents("php://input"));
+if(!empty($_SERVER['HTTP_AUTHORIZATION'])){
+	$arr = explode(" ", $_SERVER['HTTP_AUTHORIZATION']);
+	$jwt = $arr[1];
+	if (!empty($jwt)) {
+			try {
 			// instantiate database and server object
 			$database = new Database();
 			$db = $database->getConnection();
 	
-			$query = "SELECT id, enabled FROM users WHERE apikey=:apikey";
-			$stmt = $db->prepare($query);
+			$decoded = JWT::decode($jwt, $secret_key, array('HS256'));
 	
-			$stmt->bindParam(":apikey", $_GET['apikey']);
+			$query = "SELECT id, enabled FROM users WHERE id=:userid";
+			$stmt = $db->prepare($query);
+			$userid = $decoded->data->id;
+			$stmt->bindParam(":userid", $userid);
 			$stmt->execute();
 	
 			if ($stmt->rowCount() == 1) { // check if API key exists
@@ -27,7 +41,7 @@ if (isset($_GET['apikey'])) {
 					if ($enabled == "1") { // check if the account of owner of the API key is enabled
 						if ($_SERVER['REQUEST_METHOD'] === 'GET') { // get startup script(s)
 							$response = array('error' => false);
-							if (isset($_GET['name'])) { // only one startup script
+							if (!empty($_GET['name'])) { // only one startup script
 								$query = "SELECT name, script FROM scripts WHERE name=:name AND userid=:userid";
 								$stmt = $db->prepare($query);
 								$nameLowerCase = strtolower($_GET['name']);
@@ -68,7 +82,7 @@ if (isset($_GET['apikey'])) {
 							}		
 							http_response_code(200);
 						} else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-							if (isset($_GET['name'])) {
+							if (!empty($_GET['name'])) {
 								$input = file_get_contents('php://input');
 								if ($input) {
 									$query = "SELECT NULL FROM scripts WHERE name=:name AND userid=:userid";
@@ -106,7 +120,7 @@ if (isset($_GET['apikey'])) {
 								http_response_code(400);
 							}
 						} else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-							if (isset($_GET['name'])) {
+							if (!empty($_GET['name'])) {
 								$input = file_get_contents('php://input');
 								if ($input) {
 									$query = "SELECT NULL FROM scripts WHERE name=:name AND userid=:userid";
@@ -144,7 +158,7 @@ if (isset($_GET['apikey'])) {
 								http_response_code(400);
 							}	
 						} else if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-								if (isset($_GET['name'])) {
+								if (!empty($_GET['name'])) {
 									$nameLowerCase = strtolower($_GET['name']);
 									$query = "DELETE FROM scripts WHERE userid=:userid AND name=:name";
 									$stmt= $db->prepare($query);
@@ -168,18 +182,25 @@ if (isset($_GET['apikey'])) {
 							$response = array ('error' => true, 'message' => 'Invalid request method');
 							http_response_code(400);
 						}
-					} else { // Invalid/unknown API Key
-						$response = array ('error' => true, 'message' => 'Authentification failed');
+					} else {
+						$response = array ('error' => true, 'message' => 'Account disabled');
 						http_response_code(400);
 					}
-			}else{
+			}else{ // Invalid/unknown API Key
 				$response = array ('error' => true, 'message' => 'Invalid/unknown API key');
 				http_response_code(400);
 			}
-		
+	} catch (Exception $e) {
+		$response = array ('error' => true, 'message' => 'Authentication failed');
+		http_response_code(401);
+	}
 } else {
-	$response = array ('error' => true, 'message' => 'No API key given');
-	// TODO: check session
+	$response = array ('error' => true, 'message' => 'Missing access token');
+	http_response_code(400);
+}
+} else {
+	$response = array ('error' => true, 'message' => 'Missing access token');
+	http_response_code(400);
 }
 echo json_encode($response);
 
