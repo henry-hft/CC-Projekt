@@ -1,15 +1,17 @@
 <?php
+
 abstract class Provider {
-  public $apiKey;
-  public function __construct($apiKey) {
-    $this->apiKey = $apiKey;
+  public $token;
+  public function __construct($token) {
+    $this->token = $token;
   }
-  abstract public function locations($id = null) : array;
-  abstract public function create() : array;
-  abstract public function delete() : array;
-  abstract public function status() : array;
-  abstract public function info() : array;
-  abstract public function start() : array;
-  abstract public function stop() : array;
+  abstract public function locations($id = null);
+  abstract public function create();
+  abstract public function delete();
+  abstract public function status();
+  abstract public function info();
+  abstract public function start();
+  abstract public function stop();
 }
+
 ?>
