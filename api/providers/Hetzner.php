@@ -90,6 +90,7 @@ class Hetzner extends Provider {
 			     "Content-type: application/json\r\n";
 		$request->httpRequest("GET", "https://api.hetzner.cloud/v1/images", $header, "");
 		$response = $request->getResponse();
+		echo $request->getStatusCode();
 		$decoded = json_decode($response);
 		$response = array('error' => false);
 		$osArray = array('os' => array());
@@ -129,9 +130,22 @@ class Hetzner extends Provider {
   public function create(){
 	  
   }
-   public function delete(){
-	  
-  }
+   public function delete($id){
+	  $request = new Request();
+		$apikey = $this->token;
+		$header = "Accept-language: en\r\n" .
+				  "Authorization: Bearer $apikey\r\n" . 
+			     "Content-type: application/json\r\n";
+		$request->httpRequest("DELETE", "https://api.hetzner.cloud/v1/servers/$id", $header, "");
+		$response = $request->getResponse();
+		$decoded = json_decode($response);
+		if($decoded->action->error == null){
+			$response = array('error' => false, 'message' => 'Server successfully deleted');
+		} else {
+			$response = array('error' => true, 'message' => 'Server could not be deleted');
+		}
+		return $response;
+   }
    public function status(){
 	  
   }
