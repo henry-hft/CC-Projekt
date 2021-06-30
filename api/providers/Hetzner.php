@@ -81,6 +81,51 @@ class Hetzner extends Provider {
 		}
 		return $response;
 	}
+	
+	public function os($id = null, $family = null) {
+		$request = new Request();
+		$apikey = $this->token;
+		$header = "Accept-language: en\r\n" .
+				  "Authorization: Bearer $apikey\r\n" . 
+			     "Content-type: application/json\r\n";
+		$request->httpRequest("GET", "https://api.hetzner.cloud/v1/images", $header, "");
+		$response = $request->getResponse();
+		$decoded = json_decode($response);
+		$response = array('error' => false);
+		$osArray = array('os' => array());
+		foreach($decoded->images as $os){
+			if($os->type == "system"){
+				if(!is_null($family)){
+					if($family != $os->os_flavor){
+						continue;
+					}
+                }					
+			if (is_null($id)) {
+				$planArray['os'][] = array(
+					   "id" => $os->id,
+					   "name" => $os->description,
+					   "family" => $os->os_flavor
+				);
+			} else {
+				if($plans->name == $id){
+					$response += array("plans" => array(
+										"id" => $os->id,
+										"name" => $os->description,
+										"family" => $os->os_flavor
+										)
+								);
+								break;
+				}
+			}
+		}
+		}
+		if (is_null($id)) {
+			$response += $planArray;
+		} else if (count($response) < 2) {
+			$response = array("error" => true, "message" => "Unknown operating system or operating system family");
+		}
+		return $response;
+	}
   public function create(){
 	  
   }
