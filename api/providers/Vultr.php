@@ -127,9 +127,21 @@ class Vultr extends Provider {
   public function create(){
 	  
   }
-   public function delete(){
-	  
-  }
+   public function delete($id){
+	  $request = new Request();
+		$apikey = $this->token;
+		$header = "Accept-language: en\r\n" .
+				  "Authorization: Bearer $apikey\r\n" . 
+			     "Content-type: application/json\r\n";
+		$request->httpRequest("DELETE", "https://api.vultr.com/v2/instances/$id", $header, "");
+		$statusCode = $request->getStatusCode();
+		if($statusCode == 204){
+			$response = array('error' => false, 'message' => 'Server successfully deleted');
+		} else {
+			$response = array('error' => true, 'message' => 'Server could not be deleted');
+		}
+		return $response;
+   }
    public function status(){
 	  
   }
