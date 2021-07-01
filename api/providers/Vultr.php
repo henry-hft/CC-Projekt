@@ -3,7 +3,7 @@ include_once("./objects/Provider.php");
 include_once("./objects/Request.php");
 
 class Vultr extends Provider {
-	public function locations($id = null) {
+	public function locations($id = null, $provider = false) {
 		$request = new Request();
 		$apikey = $this->token;
 		$header = "Accept-language: en\r\n" .
@@ -16,19 +16,38 @@ class Vultr extends Provider {
 		$locationArray = array('locations' => array());
 		foreach($decoded->regions as $regions){
 			if (is_null($id)) {
-				$locationArray['locations'][] = array(
-					"id" => $regions->id,
-					"country" => $regions->country,
-					"city" => $regions->city
-				);
+				if($provider == true){
+					$locationArray['locations'][] = array(
+						"id" => $regions->id,
+						"country" => $regions->country,
+						"city" => $regions->city,
+						"provider" => "Vultr"
+					);
+				} else {
+					$locationArray['locations'][] = array(
+						"id" => $regions->id,
+						"country" => $regions->country,
+						"city" => $regions->city
+					);
+				}
 			} else {
 				if($regions->id == $id){
-					$response += array("locations" => array(
+					if($provider == true){
+						$response += array("locations" => array(
+											"id" => $regions->id,
+											"country" => $regions->country,
+											"city" => $regions->city,
+											"provider" => "Vultr"
+										)
+								);
+					} else {
+						$response += array("locations" => array(
 											"id" => $regions->id,
 											"country" => $regions->country,
 											"city" => $regions->city
 										)
 								);
+					}
 								break;
 				}
 			}
@@ -40,7 +59,7 @@ class Vultr extends Provider {
 		}
 		return $response;
 	}
-		public function plans($id = null) {
+		public function plans($id = null, $provider = false) {
 		$request = new Request();
 		$apikey = $this->token;
 		$header = "Accept-language: en\r\n" .
@@ -53,16 +72,39 @@ class Vultr extends Provider {
 		$planArray = array('plans' => array());
 		foreach($decoded->plans as $plans){
 			if (is_null($id)) {
-				$planArray['plans'][] = array(
-					"id" => $plans->id,
-					"cores" => $plans->vcpu_count,
-					"memory" => $plans->ram,
-					"disk" => $plans->disk * 1000,
-					"bandwidth" => $plans->bandwidth * 1000
-				);
+				if($provider == true){
+					$planArray['plans'][] = array(
+						"id" => $plans->id,
+						"cores" => $plans->vcpu_count,
+						"memory" => $plans->ram,
+						"disk" => $plans->disk * 1000,
+						"bandwidth" => $plans->bandwidth * 1000,
+						"provider" => "Vultr"
+					);
+				} else {
+					$planArray['plans'][] = array(
+						"id" => $plans->id,
+						"cores" => $plans->vcpu_count,
+						"memory" => $plans->ram,
+						"disk" => $plans->disk * 1000,
+						"bandwidth" => $plans->bandwidth * 1000
+					);
+				}
 			} else {
 				if($plans->id == $id){
-					$response += array("plans" => array(
+					if($provider == true){
+						$response += array("plans" => array(
+									   "id" => $plans->id,
+									   "cores" => $plans->vcpu_count,
+									   "memory" => $plans->ram,
+					                   "disk" => $plans->disk * 1000,
+					                   "bandwidth" => $plans->bandwidth * 1000,
+									   "provider" => "Vultr"
+										)
+								);
+								
+					} else {
+						$response += array("plans" => array(
 									   "id" => $plans->id,
 									   "cores" => $plans->vcpu_count,
 									   "memory" => $plans->ram,
@@ -70,6 +112,7 @@ class Vultr extends Provider {
 					                   "bandwidth" => $plans->bandwidth * 1000
 										)
 								);
+					}
 								break;
 				}
 			}
@@ -82,7 +125,7 @@ class Vultr extends Provider {
 		return $response;
 	}
 	
-			public function os($id = null, $family = null) {
+			public function os($id = null, $family = null, $provider = false) {
 		$request = new Request();
 		$apikey = $this->token;
 		$header = "Accept-language: en\r\n" .
@@ -100,19 +143,38 @@ class Vultr extends Provider {
 					}
             }	
 			if (is_null($id)) {
-				$osArray['os'][] = array(
-					"id" => $os->id,
-					"name" => $os->name,
-					"family" => $os->family
-				);
+				if($provider == true){
+					$osArray['os'][] = array(
+						"id" => $os->id,
+						"name" => $os->name,
+						"family" => $os->family,
+						"provider" => "Vultr"
+					);
+				} else {
+					$osArray['os'][] = array(
+						"id" => $os->id,
+						"name" => $os->name,
+						"family" => $os->family
+					);
+				}
 			} else {
 				if($os->id == $id){
-					$response += array("os" => array(
+					if($provider == true){
+						$response += array("os" => array(
+									   "id" => $os->id,
+									   "name" => $os->name,
+					                   "family" => $os->family,
+									   "provider" => "Vultr"
+									)
+								);
+					} else {
+						$response += array("os" => array(
 									   "id" => $os->id,
 									   "name" => $os->name,
 					                   "family" => $os->family
 										)
 								);
+					}
 								break;
 				}
 			}
@@ -124,7 +186,7 @@ class Vultr extends Provider {
 		}
 		return $response;
 	}
-  public function create(){
+  public function create($hostname, $location, $plan, $os, $sshkey, $script){
 	  
   }
    public function delete($id){
@@ -151,8 +213,80 @@ class Vultr extends Provider {
    public function start(){
 	  
   }
-   public function stop(){
+   public function stop($id){
 	  
   }
+  
+    public function createSSHKey($key){
+	$name = uniqid();
+	$request = new Request();
+		$apikey = $this->token;
+		$header = "Accept-language: en\r\n" .
+				  "Authorization: Bearer $apikey\r\n" . 
+			     "Content-type: application/json\r\n";
+		$postData = '{"name":"'.$name.'","ssh_key":"'.$key.'"}';
+		$request->httpRequest("POST", "https://api.hetzner.cloud/v1/ssh_keys", $header, $postData);
+		$response = $request->getResponse();
+		$decoded = json_decode($response);
+		if(array_key_exists('ssh_key', $decoded)) {
+			$id = $decoded->ssh_key->id;
+			return $id;
+		} else {
+			return null;
+		}
+  }
+  
+    public function deleteSSHKey($id){
+	$request = new Request();
+		$apikey = $this->token;
+		$header = "Accept-language: en\r\n" .
+				  "Authorization: Bearer $apikey\r\n" . 
+			      "Content-type: application/json\r\n";
+		$request->httpRequest("DELETE", "https://api.hetzner.cloud/v1/ssh_keys/$id", $header, "");
+		$statusCode = $request->getStatusCode();
+		if($statusCode == 204){
+			$response = array('error' => false, 'message' => 'SSH Key successfully deleted');
+		} else {
+			$response = array('error' => true, 'message' => 'SSH Key could not be deleted');
+		}
+		return $response;
+  }
+  
+      public function createScript($script){
+	$name = uniqid();
+	$encodedScript = base64_encode($script);
+	$request = new Request();
+		$apikey = $this->token;
+		$header = "Accept-language: en\r\n" .
+				  "Authorization: Bearer $apikey\r\n" . 
+			     "Content-type: application/json\r\n";
+		$postData = '{"name":"'.$name.'","script":"'.$encodedScript.'"}';
+		$request->httpRequest("POST", "https://api.vultr.com/v2/startup-scripts", $header, $postData);
+		$response = $request->getResponse();
+		$decoded = json_decode($response);
+		if(array_key_exists('startup_script', $decoded)) {
+			$id = $decoded->startup_script->id;
+			return $id;
+		} else {
+			return null;
+		}
+  }
+  
+    public function deleteScript($id){
+	$request = new Request();
+		$apikey = $this->token;
+		$header = "Accept-language: en\r\n" .
+				  "Authorization: Bearer $apikey\r\n" . 
+			      "Content-type: application/json\r\n";
+		$request->httpRequest("DELETE", "https://api.vultr.com/v2/startup-scripts/$id", $header, "");
+		$statusCode = $request->getStatusCode();
+		if($statusCode == 204){
+			$response = array('error' => false, 'message' => 'Startup script successfully deleted');
+		} else {
+			$response = array('error' => true, 'message' => 'Startup script could not be deleted');
+		}
+		return $response;
+  }
+  
 }	
 ?>
