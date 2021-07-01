@@ -5,15 +5,17 @@ abstract class Provider {
   public function __construct($token) {
     $this->token = $token;
   }
-  abstract public function locations($id = null);
-  abstract public function plans($id = null);
-  abstract public function os($id = null);
-  abstract public function create();
+  abstract public function locations($id = null, $provider = false);
+  abstract public function plans($id = null, $provider = false);
+  abstract public function os($id = null, $provider = false);
+  abstract public function create($hostname, $location, $plan, $os, $sshkey, $script);
   abstract public function delete($id);
   abstract public function status();
   abstract public function info();
   abstract public function start();
-  abstract public function stop();
+  abstract public function stop($id);
+  abstract public function createSSHKey($key);
+  abstract public function deleteSSHKey($id);
 }
 
 ?>
