@@ -3,7 +3,7 @@ include_once("./objects/Provider.php");
 include_once("./objects/Request.php");
 
 class Hetzner extends Provider {
-	public function locations($id = null) {
+	public function locations($id = null, $provider = false) {
 		$request = new Request();
 		$apikey = $this->token;
 		$header = "Accept-language: en\r\n" .
@@ -16,19 +16,38 @@ class Hetzner extends Provider {
 		$locationArray = array('locations' => array());
 		foreach($decoded->locations as $regions){
 			if (is_null($id)) {
-				$locationArray['locations'][] = array(
-					"id" => $regions->name,
-					"country" => $regions->country,
-					"city" => $regions->city
-				);
+				if($provider == true){
+					$locationArray['locations'][] = array(
+						"id" => $regions->name,
+						"country" => $regions->country,
+						"city" => $regions->city,
+						"provider" => "Hetzner"
+					);
+				} else {
+					$locationArray['locations'][] = array(
+						"id" => $regions->name,
+						"country" => $regions->country,
+						"city" => $regions->city
+					);
+				}
 			} else {
 				if($regions->name == $id){
-					$response += array("locations" => array(
+					if($provider == true){
+						$response += array("locations" => array(
+											"id" => $regions->name,
+											"country" => $regions->country,
+											"city" => $regions->city,
+											"provider" => "Hetzner"
+										)
+								);
+					} else {
+						$response += array("locations" => array(
 											"id" => $regions->name,
 											"country" => $regions->country,
 											"city" => $regions->city
 										)
 								);
+					}
 								break;
 				}
 			}
@@ -40,7 +59,7 @@ class Hetzner extends Provider {
 		}
 		return $response;
 	}
-		public function plans($id = null) {
+		public function plans($id = null, $provider = false) {
 		$request = new Request();
 		$apikey = $this->token;
 		$header = "Accept-language: en\r\n" .
@@ -53,16 +72,38 @@ class Hetzner extends Provider {
 		$planArray = array('plans' => array());
 		foreach($decoded->server_types as $plans){
 			if (is_null($id)) {
-				$planArray['plans'][] = array(
-					"id" => $plans->name,
-					"cores" => $plans->cores,
-					"memory" => $plans->memory * 1024,
-					"disk" => $plans->disk * 1000,
-					"bandwidth" => 20 * 1000 * 1024
-				);
+				if($provider == true){
+					$planArray['plans'][] = array(
+						"id" => $plans->name,
+						"cores" => $plans->cores,
+						"memory" => $plans->memory * 1024,
+						"disk" => $plans->disk * 1000,
+						"bandwidth" => 20 * 1000 * 1024,
+						"provider" => "Hetzner"
+					);
+				} else {
+					$planArray['plans'][] = array(
+						"id" => $plans->name,
+						"cores" => $plans->cores,
+						"memory" => $plans->memory * 1024,
+						"disk" => $plans->disk * 1000,
+						"bandwidth" => 20 * 1000 * 1024
+					);
+				}
 			} else {
 				if($plans->name == $id){
-					$response += array("plans" => array(
+					if($provider == true){
+						$response += array("plans" => array(
+											"id" => $plans->name,
+											"cores" => $plans->cores,
+											"memory" => $plans->memory * 1024,
+											"disk" => $plans->disk * 1000,
+											"bandwidth" => 20 * 1000 * 1024,
+											"provider" => "Hetzner"
+										)
+								);
+					} else {
+						$response += array("plans" => array(
 											"id" => $plans->name,
 											"cores" => $plans->cores,
 											"memory" => $plans->memory * 1024,
@@ -70,6 +111,7 @@ class Hetzner extends Provider {
 											"bandwidth" => 20 * 1000 * 1024
 										)
 								);
+					}
 								break;
 				}
 			}
@@ -82,7 +124,7 @@ class Hetzner extends Provider {
 		return $response;
 	}
 	
-	public function os($id = null, $family = null) {
+	public function os($id = null, $family = null, $provider = false) {
 		$request = new Request();
 		$apikey = $this->token;
 		$header = "Accept-language: en\r\n" .
@@ -90,7 +132,6 @@ class Hetzner extends Provider {
 			     "Content-type: application/json\r\n";
 		$request->httpRequest("GET", "https://api.hetzner.cloud/v1/images", $header, "");
 		$response = $request->getResponse();
-		echo $request->getStatusCode();
 		$decoded = json_decode($response);
 		$response = array('error' => false);
 		$osArray = array('os' => array());
@@ -102,19 +143,38 @@ class Hetzner extends Provider {
 					}
                 }					
 			if (is_null($id)) {
-				$planArray['os'][] = array(
+				if($provider == true){
+					$planArray['os'][] = array(
+					   "id" => $os->id,
+					   "name" => $os->description,
+					   "family" => $os->os_flavor,
+					   "provider" => "Hetzner"
+					);
+				} else {
+					$planArray['os'][] = array(
 					   "id" => $os->id,
 					   "name" => $os->description,
 					   "family" => $os->os_flavor
-				);
+					);
+				}
 			} else {
 				if($plans->name == $id){
-					$response += array("plans" => array(
+					if($provider == true){
+						$response += array("plans" => array(
+										"id" => $os->id,
+										"name" => $os->description,
+										"family" => $os->os_flavor,
+										"provider" => "Hetzner"
+										)
+								);
+					} else {
+						$response += array("plans" => array(
 										"id" => $os->id,
 										"name" => $os->description,
 										"family" => $os->os_flavor
 										)
 								);
+					}
 								break;
 				}
 			}
@@ -127,7 +187,7 @@ class Hetzner extends Provider {
 		}
 		return $response;
 	}
-  public function create(){
+  public function create($hostname, $location, $plan, $os, $sshkey, $script){
 	  
   }
    public function delete($id){
@@ -155,7 +215,42 @@ class Hetzner extends Provider {
    public function start(){
 	  
   }
-   public function stop(){
+  public function createSSHKey($key){
+	$name = uniqid();
+	$request = new Request();
+		$apikey = $this->token;
+		$header = "Accept-language: en\r\n" .
+				  "Authorization: Bearer $apikey\r\n" . 
+			     "Content-type: application/json\r\n";
+		$postData = '{"name":"'.$name.'","public_key":"'.$key.'"}';
+		$request->httpRequest("POST", "https://api.hetzner.cloud/v1/ssh_keys", $header, $postData);
+		$response = $request->getResponse();
+		$decoded = json_decode($response);
+		if(array_key_exists('ssh_key', $decoded)) {
+			$id = $decoded->ssh_key->id;
+			return $id;
+		} else {
+			return null;
+		}
+  }
+  
+    public function deleteSSHKey($id){
+	$request = new Request();
+		$apikey = $this->token;
+		$header = "Accept-language: en\r\n" .
+				  "Authorization: Bearer $apikey\r\n" . 
+			      "Content-type: application/json\r\n";
+		$request->httpRequest("DELETE", "https://api.hetzner.cloud/v1/ssh_keys/$id", $header, "");
+		$statusCode = $request->getStatusCode();
+		if($statusCode == 204){
+			$response = array('error' => false, 'message' => 'SSH Key successfully deleted');
+		} else {
+			$response = array('error' => true, 'message' => 'SSH Key could not be deleted');
+		}
+		return $response;
+  }
+  
+  public function stop($id){
 	  
   }
 }	
