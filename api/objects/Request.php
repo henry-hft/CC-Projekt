@@ -9,6 +9,7 @@ class Request {
 			'http'=> array(
 				'method' => $method,
 				'header' => $header,
+				'ignore_errors' => true,
 				'content' => $content
 			)
 		);
