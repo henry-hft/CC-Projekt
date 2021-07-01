@@ -21,10 +21,8 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 spl_autoload_register(function ($class_name) {
     include 'providers/' . $class_name . '.php';
 });
-
-
-$data = json_decode(file_get_contents("php://input"));
-if(!empty($_SERVER['HTTP_AUTHORIZATION'])){
+if((!empty($_GET['id']) AND !empty($_GET['provider'])) OR (empty($_GET['id']) AND !empty($_GET['provider'])) OR (empty($_GET['id']) AND empty($_GET['provider']))){
+	if(!empty($_SERVER['HTTP_AUTHORIZATION'])){
 	$arr = explode(" ", $_SERVER['HTTP_AUTHORIZATION']);
 	$jwt = $arr[1];
 	if (!empty($jwt)) {
@@ -47,7 +45,7 @@ if(!empty($_SERVER['HTTP_AUTHORIZATION'])){
 				$stmt->fetch(); 
 					if ($enabled == "1") { // check if the account of owner of the API key is enabled
 						if ($_SERVER['REQUEST_METHOD'] === 'GET') { // get server(s)
-							if (isset($_GET['provider'])) { // only one provider
+							if (!empty($_GET['provider'])) { // only one provider
 								$query = "SELECT name FROM providers WHERE name LIKE :providerName";
 								$stmt = $db->prepare($query);
 								$stmt->bindParam(":providerName", $_GET['provider']);
@@ -55,60 +53,82 @@ if(!empty($_SERVER['HTTP_AUTHORIZATION'])){
 								
 								if ($stmt->rowCount() == 1) { // check if provider is valid
 									$providerName = $stmt->fetchColumn();
-									// get provider token (api key)
-									$header = "Authorization: Bearer $jwt\r\n" . 
-											  "Content-type: application/json\r\n";
-									$request = new Request();
-									
-									$request->httpRequest("GET", "http://193.196.52.234/cloud/CC-Projekt/api/token.php?provider=$providerName", $header, "");
-									$httpResponse = $request->getResponse();
-									$decoded = json_decode($httpResponse);
-									if($decoded->error === false){
-										$enabled = $decoded->token->enabled;
-										if($enabled === true){
-											$token = $decoded->token->token;
-											$providerObj = new $providerName($token);
-											if(!empty($_GET['id'])){
-												$locationResponse = $providerObj->locations($_GET['id']);
-											} else {
-												$locationResponse = $providerObj->locations();
-											}
-											$response = $locationResponse;
-											if($locationResponse['error'] == "false"){
-												http_response_code(200);
-											} else {
-												http_response_code(400);
-											}
-												
-											
-											
-										}else{
-											$response = array ('error' => true, 'message' => 'Provider is disabled');
-											http_response_code(400);
-											exit(json_encode($response));
-										}
-									} else {
-										http_response_code(400);
-										exit($httpResponse);
-									}
-									
-									
-									
 								} else {
 									$response = array ('error' => true, 'message' => 'Invalid/unknown provider');
 									http_response_code(400);
 									exit(json_encode($response));
-								}		
-							} else {
-								$response = array ('error' => true, 'message' => 'Missing provider parameter');
-								http_response_code(400);
+								}			
 							}		
-							
+									
+									
+									$query = "SELECT * FROM tokens WHERE userid=:userid";
+									$stmt = $db->prepare($query);
+									$stmt->bindParam(":userid", $userid);
+									$stmt->execute();
+									$providers = array();
+								
+
+								$response = array();
+									while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+											$provider = $row['provider'];
+											$providerToken = $row['token'];
+											$enabled = $row['enabled'];
+											if(isset($providerName)){
+												if($provider == $providerName){
+													if($enabled == "1"){
+														$providerObj = new $provider($providerToken);
+														if(!empty($_GET['id'])){
+															$locationsResponse = $providerObj->locations($_GET['id']);
+														} else {
+															$locationsResponse = $providerObj->locations();
+														}		
+														$response = $locationsResponse;
+													} else {
+														$response = array ('error' => true, 'message' => 'Provider is disabled');
+														http_response_code(400);
+														exit(json_encode($response));
+													}
+													break;
+												}
+											} else {
+												if($enabled == "1"){
+													$providerObj = new $provider($providerToken);
+													$locationsResponse = $providerObj->locations(null, true);
+													
+													if($locationsResponse['error'] == false){ 
+														if(count($response) >= 1){
+															$response = array_merge($response, $locationsResponse["locations"]);
+														} else {
+															$response = array_merge($response, $locationsResponse["locations"]);
+														}
+													} else {
+														$response = array ('error' => true, 'message' => 'Cloud not get requested data');
+														http_response_code(400);
+														exit(json_encode($response));
+													}
+												}
+											}
+									}
+									
+									if(!isset($providerName)){
+										$response = array("error" => false, "locations" => $response);
+									}
+									
+									if(count($response) > 1){
+											if($response['error'] == "false"){
+												http_response_code(200);
+											} else {
+												http_response_code(400);
+											}
+									} else {
+										$response = array ('error' => true, 'message' => 'No enabled providers found');
+										http_response_code(400);
+									}
 						} else {
 							$response = array ('error' => true, 'message' => 'Invalid request method');
 							http_response_code(400);
 						}
-					} else { // Invalid/unknown API Key
+					} else {
 						$response = array ('error' => true, 'message' => 'Authentification failed');
 						http_response_code(400);
 					}
@@ -127,6 +147,8 @@ if(!empty($_SERVER['HTTP_AUTHORIZATION'])){
 } else {
 	$response = array ('error' => true, 'message' => 'Missing access token');
 }
+} else {
+	$response = array ('error' => true, 'message' => 'Invalid parameter');
+}
 echo json_encode($response);
-
 ?>
