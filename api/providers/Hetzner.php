@@ -3,7 +3,7 @@ include_once("./objects/Provider.php");
 include_once("./objects/Request.php");
 
 class Hetzner extends Provider {
-	public function locations($id = null, $provider = false) {
+	public function locations($id = null, $allProviders = false) {
 		$request = new Request();
 		$apikey = $this->token;
 		$header = "Accept-language: en\r\n" .
@@ -13,15 +13,18 @@ class Hetzner extends Provider {
 		$response = $request->getResponse();
 		$decoded = json_decode($response);
 		$response = array('error' => false);
-		$locationArray = array('locations' => array());
+		if($allProviders == true){
+			$locationArray = array('locations' => array('Hetzner' => array()));
+		} else {
+			$locationArray = array('locations' => array());
+		}
 		foreach($decoded->locations as $regions){
 			if (is_null($id)) {
-				if($provider == true){
-					$locationArray['locations'][] = array(
+				if($allProviders == true){
+					$locationArray['locations']['Hetzner'][] = array(
 						"id" => $regions->name,
 						"country" => $regions->country,
-						"city" => $regions->city,
-						"provider" => "Hetzner"
+						"city" => $regions->city
 					);
 				} else {
 					$locationArray['locations'][] = array(
@@ -32,7 +35,7 @@ class Hetzner extends Provider {
 				}
 			} else {
 				if($regions->name == $id){
-					if($provider == true){
+					if($allProviders == false){
 						$response += array("locations" => array(
 											"id" => $regions->name,
 											"country" => $regions->country,
@@ -41,14 +44,9 @@ class Hetzner extends Provider {
 										)
 								);
 					} else {
-						$response += array("locations" => array(
-											"id" => $regions->name,
-											"country" => $regions->country,
-											"city" => $regions->city
-										)
-								);
+						$response = array("error" => true, "message" => "Missing provider parameter");
 					}
-								break;
+					break;
 				}
 			}
 		}
@@ -59,7 +57,7 @@ class Hetzner extends Provider {
 		}
 		return $response;
 	}
-		public function plans($id = null, $provider = false) {
+		public function plans($id = null, $allProviders = false) {
 		$request = new Request();
 		$apikey = $this->token;
 		$header = "Accept-language: en\r\n" .
@@ -69,17 +67,20 @@ class Hetzner extends Provider {
 		$response = $request->getResponse();
 		$decoded = json_decode($response);
 		$response = array('error' => false);
-		$planArray = array('plans' => array());
+		if($allProviders == true){
+			$planArray = array('plans' => array('Hetzner' => array()));
+		} else {
+			$planArray = array('plans' => array());
+		}
 		foreach($decoded->server_types as $plans){
 			if (is_null($id)) {
-				if($provider == true){
-					$planArray['plans'][] = array(
+				if($allProviders == true){
+					$planArray['plans']['Hetzner'][] = array(
 						"id" => $plans->name,
 						"cores" => $plans->cores,
 						"memory" => $plans->memory * 1024,
 						"disk" => $plans->disk * 1000,
-						"bandwidth" => 20 * 1000 * 1024,
-						"provider" => "Hetzner"
+						"bandwidth" => 20 * 1000 * 1024
 					);
 				} else {
 					$planArray['plans'][] = array(
@@ -92,17 +93,7 @@ class Hetzner extends Provider {
 				}
 			} else {
 				if($plans->name == $id){
-					if($provider == true){
-						$response += array("plans" => array(
-											"id" => $plans->name,
-											"cores" => $plans->cores,
-											"memory" => $plans->memory * 1024,
-											"disk" => $plans->disk * 1000,
-											"bandwidth" => 20 * 1000 * 1024,
-											"provider" => "Hetzner"
-										)
-								);
-					} else {
+					if($allProviders == false){
 						$response += array("plans" => array(
 											"id" => $plans->name,
 											"cores" => $plans->cores,
@@ -111,6 +102,8 @@ class Hetzner extends Provider {
 											"bandwidth" => 20 * 1000 * 1024
 										)
 								);
+					} else {
+						$response = array("error" => true, "message" => "Missing provider parameter");
 					}
 								break;
 				}
@@ -124,7 +117,7 @@ class Hetzner extends Provider {
 		return $response;
 	}
 	
-	public function os($id = null, $family = null, $provider = false) {
+	public function os($id = null, $family = null, $allProviders = false) {
 		$request = new Request();
 		$apikey = $this->token;
 		$header = "Accept-language: en\r\n" .
@@ -134,7 +127,13 @@ class Hetzner extends Provider {
 		$response = $request->getResponse();
 		$decoded = json_decode($response);
 		$response = array('error' => false);
-		$osArray = array('os' => array());
+		
+		if($allProviders == true){
+			$osArray = array('os' => array('Hetzner' => array()));
+		} else {
+			$osArray = array('os' => array());
+		}
+		
 		foreach($decoded->images as $os){
 			if($os->type == "system"){
 				if(!is_null($family)){
@@ -143,45 +142,38 @@ class Hetzner extends Provider {
 					}
                 }					
 			if (is_null($id)) {
-				if($provider == true){
-					$planArray['os'][] = array(
+				if($allProviders == true){
+					$osArray['os']['Hetzner'][] = array(
 					   "id" => $os->id,
 					   "name" => $os->description,
-					   "family" => $os->os_flavor,
-					   "provider" => "Hetzner"
+					   "family" => $os->os_flavor
 					);
 				} else {
-					$planArray['os'][] = array(
+					$osArray['os'][] = array(
 					   "id" => $os->id,
 					   "name" => $os->description,
 					   "family" => $os->os_flavor
 					);
 				}
 			} else {
-				if($plans->name == $id){
-					if($provider == true){
-						$response += array("plans" => array(
-										"id" => $os->id,
-										"name" => $os->description,
-										"family" => $os->os_flavor,
-										"provider" => "Hetzner"
-										)
-								);
-					} else {
-						$response += array("plans" => array(
+				if($os->name == $id){
+					if($provider == false){
+						$response += array("os" => array(
 										"id" => $os->id,
 										"name" => $os->description,
 										"family" => $os->os_flavor
 										)
 								);
+					} else {
+						$response = array("error" => true, "message" => "Missing provider parameter");
 					}
-								break;
+					break;
 				}
 			}
 		}
 		}
 		if (is_null($id)) {
-			$response += $planArray;
+			$response += $osArray;
 		} else if (count($response) < 2) {
 			$response = array("error" => true, "message" => "Unknown operating system or operating system family");
 		}
