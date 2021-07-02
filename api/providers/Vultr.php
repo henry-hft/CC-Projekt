@@ -3,7 +3,7 @@ include_once("./objects/Provider.php");
 include_once("./objects/Request.php");
 
 class Vultr extends Provider {
-	public function locations($id = null, $provider = false) {
+	public function locations($id = null, $allProviders = false) {
 		$request = new Request();
 		$apikey = $this->token;
 		$header = "Accept-language: en\r\n" .
@@ -13,15 +13,18 @@ class Vultr extends Provider {
 		$response = $request->getResponse();
 		$decoded = json_decode($response);
 		$response = array('error' => false);
-		$locationArray = array('locations' => array());
+		if($allProviders == true){
+			$locationArray = array('locations' => array('Vultr' => array()));
+		} else {
+			$locationArray = array('locations' => array());
+		}
 		foreach($decoded->regions as $regions){
 			if (is_null($id)) {
-				if($provider == true){
-					$locationArray['locations'][] = array(
+				if($allProviders == true){
+					$locationArray['locations']['Vultr'][] = array(
 						"id" => $regions->id,
 						"country" => $regions->country,
-						"city" => $regions->city,
-						"provider" => "Vultr"
+						"city" => $regions->city
 					);
 				} else {
 					$locationArray['locations'][] = array(
@@ -32,23 +35,17 @@ class Vultr extends Provider {
 				}
 			} else {
 				if($regions->id == $id){
-					if($provider == true){
-						$response += array("locations" => array(
-											"id" => $regions->id,
-											"country" => $regions->country,
-											"city" => $regions->city,
-											"provider" => "Vultr"
-										)
-								);
-					} else {
+					if($allProviders == false){
 						$response += array("locations" => array(
 											"id" => $regions->id,
 											"country" => $regions->country,
 											"city" => $regions->city
 										)
 								);
+					} else {
+						$response = array("error" => true, "message" => "Missing provider parameter");
 					}
-								break;
+					break;
 				}
 			}
 		}
@@ -59,7 +56,7 @@ class Vultr extends Provider {
 		}
 		return $response;
 	}
-		public function plans($id = null, $provider = false) {
+		public function plans($id = null, $allProviders = false) {
 		$request = new Request();
 		$apikey = $this->token;
 		$header = "Accept-language: en\r\n" .
@@ -69,17 +66,20 @@ class Vultr extends Provider {
 		$response = $request->getResponse();
 		$decoded = json_decode($response);
 		$response = array('error' => false);
-		$planArray = array('plans' => array());
+		if($allProviders == true){
+			$planArray = array('plans' => array('Vultr' => array()));
+		} else {
+			$planArray = array('plans' => array());
+		}
 		foreach($decoded->plans as $plans){
 			if (is_null($id)) {
-				if($provider == true){
-					$planArray['plans'][] = array(
+				if($allProviders == true){
+					$planArray['plans']['Vultr'][] = array(
 						"id" => $plans->id,
 						"cores" => $plans->vcpu_count,
 						"memory" => $plans->ram,
 						"disk" => $plans->disk * 1000,
-						"bandwidth" => $plans->bandwidth * 1000,
-						"provider" => "Vultr"
+						"bandwidth" => $plans->bandwidth * 1000
 					);
 				} else {
 					$planArray['plans'][] = array(
@@ -92,18 +92,7 @@ class Vultr extends Provider {
 				}
 			} else {
 				if($plans->id == $id){
-					if($provider == true){
-						$response += array("plans" => array(
-									   "id" => $plans->id,
-									   "cores" => $plans->vcpu_count,
-									   "memory" => $plans->ram,
-					                   "disk" => $plans->disk * 1000,
-					                   "bandwidth" => $plans->bandwidth * 1000,
-									   "provider" => "Vultr"
-										)
-								);
-								
-					} else {
+					if($allProviders == false){
 						$response += array("plans" => array(
 									   "id" => $plans->id,
 									   "cores" => $plans->vcpu_count,
@@ -112,8 +101,10 @@ class Vultr extends Provider {
 					                   "bandwidth" => $plans->bandwidth * 1000
 										)
 								);
+					} else {
+						$response = array("error" => true, "message" => "Missing provider parameter");
 					}
-								break;
+					break;
 				}
 			}
 		}
@@ -125,7 +116,7 @@ class Vultr extends Provider {
 		return $response;
 	}
 	
-			public function os($id = null, $family = null, $provider = false) {
+	public function os($id = null, $family = null, $allProviders = false) {
 		$request = new Request();
 		$apikey = $this->token;
 		$header = "Accept-language: en\r\n" .
@@ -135,7 +126,11 @@ class Vultr extends Provider {
 		$response = $request->getResponse();
 		$decoded = json_decode($response);
 		$response = array('error' => false);
-		$osArray = array('os' => array());
+		if($allProviders == true){
+			$osArray = array('os' => array('Vultr' => array()));
+		} else {
+			$osArray = array('os' => array());
+		}
 		foreach($decoded->os as $os){
 			if(!is_null($family)){
 					if($family != $os->family){
@@ -143,12 +138,11 @@ class Vultr extends Provider {
 					}
             }	
 			if (is_null($id)) {
-				if($provider == true){
-					$osArray['os'][] = array(
+				if($allProviders == true){
+					$osArray['os']['Vultr'][] = array(
 						"id" => $os->id,
 						"name" => $os->name,
-						"family" => $os->family,
-						"provider" => "Vultr"
+						"family" => $os->family
 					);
 				} else {
 					$osArray['os'][] = array(
@@ -159,23 +153,17 @@ class Vultr extends Provider {
 				}
 			} else {
 				if($os->id == $id){
-					if($provider == true){
+					if($allProviders == false){
 						$response += array("os" => array(
-									   "id" => $os->id,
-									   "name" => $os->name,
-					                   "family" => $os->family,
-									   "provider" => "Vultr"
-									)
-								);
-					} else {
-						$response += array("os" => array(
-									   "id" => $os->id,
-									   "name" => $os->name,
-					                   "family" => $os->family
+										"id" => $os->id,
+										"name" => $os->name,
+										"family" => $os->family
 										)
 								);
+					} else {
+						$response = array("error" => true, "message" => "Missing provider parameter");
 					}
-								break;
+					break;
 				}
 			}
 		}
