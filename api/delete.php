@@ -56,18 +56,19 @@ if(!empty($_SERVER['HTTP_AUTHORIZATION'])){
 								if ($stmt->rowCount() == 1) { // check if provider is valid
 									$providerName = $stmt->fetchColumn();
 									// get provider token (api key)
-									$header = "Authorization: Bearer $jwt\r\n" . 
-											  "Content-type: application/json\r\n";
-									$request = new Request();
-									
-									$request->httpRequest("GET", "http://193.196.52.234/cloud/CC-Projekt/api/token.php?provider=$providerName", $header, "");
-									$httpResponse = $request->getResponse();
-									$decoded = json_decode($httpResponse);
-									if($decoded->error === false){
-										$enabled = $decoded->token->enabled;
-										if($enabled === true){
-											if(!empty($_GET['id'])){
-												$token = $decoded->token->token;
+							
+								$query = "SELECT token, enabled FROM tokens WHERE userid=:userid AND provider=:providerName";
+								$stmt = $db->prepare($query);
+								$stmt->bindParam(":providerName", $providerName);
+								$stmt->bindParam(":userid", $userid);
+								$stmt->execute();
+								
+								if ($stmt->rowCount() == 1) { // check if token is exists
+									$stmt->bindColumn('token', $token);
+									$stmt->bindColumn('enabled', $enabled);
+									$stmt->fetch(); 
+										if($enabled == "1"){
+										if(!empty($_GET['id'])){
 												$providerObj = new $providerName($token);
 												$deleteResponse = $providerObj->delete($_GET['id']);
 												$response = $deleteResponse;
@@ -80,25 +81,19 @@ if(!empty($_SERVER['HTTP_AUTHORIZATION'])){
 											} else {
 												$response = array ('error' => true, 'message' => 'Server ID missing.');
 												http_response_code(400);
-											}												
-											
-											
-										}else{
+											}
+										} else {
 											$response = array ('error' => true, 'message' => 'Provider is disabled');
 											http_response_code(400);
-											exit(json_encode($response));
-										}
-									} else {
-										http_response_code(400);
-										exit($httpResponse);
-									}
-									
-									
-									
+										}											
+								} else {
+									$response = array ('error' => true, 'message' => 'No provider API Key found');
+									http_response_code(400);
+								}
+
 								} else {
 									$response = array ('error' => true, 'message' => 'Invalid/unknown provider');
 									http_response_code(400);
-									exit(json_encode($response));
 								}		
 							} else {
 								$response = array ('error' => true, 'message' => 'Missing provider parameter');
