@@ -191,7 +191,7 @@ class Hetzner extends Provider {
 		$request->httpRequest("DELETE", "https://api.hetzner.cloud/v1/servers/$id", $header, "");
 		$response = $request->getResponse();
 		$decoded = json_decode($response);
-		if($decoded->action->error == null){
+		if(!isset($decoded->error)){
 			$response = array('error' => false, 'message' => 'Server successfully deleted');
 		} else {
 			$response = array('error' => true, 'message' => 'Server could not be deleted');
