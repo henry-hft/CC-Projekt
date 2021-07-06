@@ -174,9 +174,39 @@ class Vultr extends Provider {
 		}
 		return $response;
 	}
-  public function create($hostname, $location, $plan, $os, $sshkey, $script){
-	  
+	
+    public function create($hostname, $location, $plan, $os, $sshkey, $script = null){
+	   $request = new Request();
+		$apikey = $this->token;
+		$header = "Accept-language: en\r\n" .
+				  "Authorization: Bearer $apikey\r\n" . 
+			     "Content-type: application/json\r\n";
+		if(!is_null($script)){
+			$postData = '{"hostname":"'.$hostname.'","label":"'.$hostname.'","region":"'.$location.'","plan":"'.$plan.'","os_id":"'.$os.'","sshkey_id":["'.$sshkey.'"],"script_id":"'.$script.'","enable_ipv6": true}';
+		} else {
+			$postData = '{"hostname":"'.$hostname.'","label":"'.$hostname.'","region":"'.$location.'","plan":"'.$plan.'","os_id":"'.$os.'","sshkey_id":["'.$sshkey.'"],"enable_ipv6": true}';
+		}
+		$request->httpRequest("POST", "https://api.vultr.com/v2/instances", $header, $postData);
+		$response = $request->getResponse();
+		echo $response;
+		$decoded = json_decode($response);
+		if(!isset($decoded->error)){
+			$id = $decoded->instance->id;
+			$osId = $decoded->instance->os_id;
+			$os = $decoded->instance->os;
+			$location = $decoded->instance->region;
+			$plan = $decoded->instance->plan;
+			$hostname = $decoded->instance->label;
+			$status = $decoded->instance->status;
+			
+			$server = array('id' => $id, 'hostname' => $hostname, 'status' => $status, 'os' => $os, 'osID' => $osId, 'location' => $location, 'plan' => $plan);
+			$response = array('error' => false, 'message' => 'Server successfully created', 'servers' => $server);
+		} else {
+			$response = array('error' => true, 'message' => 'Server could not be created');
+		}
+		return $response;
   }
+  
    public function delete($id){
 	  $request = new Request();
 		$apikey = $this->token;
@@ -213,10 +243,10 @@ class Vultr extends Provider {
 				  "Authorization: Bearer $apikey\r\n" . 
 			     "Content-type: application/json\r\n";
 		$postData = '{"name":"'.$name.'","ssh_key":"'.$key.'"}';
-		$request->httpRequest("POST", "https://api.hetzner.cloud/v1/ssh_keys", $header, $postData);
+		$request->httpRequest("POST", "https://api.vultr.com/v2/ssh-keys", $header, $postData);
 		$response = $request->getResponse();
 		$decoded = json_decode($response);
-		if(array_key_exists('ssh_key', $decoded)) {
+		if(isset($decoded->ssh_key)){
 			$id = $decoded->ssh_key->id;
 			return $id;
 		} else {
@@ -230,7 +260,7 @@ class Vultr extends Provider {
 		$header = "Accept-language: en\r\n" .
 				  "Authorization: Bearer $apikey\r\n" . 
 			      "Content-type: application/json\r\n";
-		$request->httpRequest("DELETE", "https://api.hetzner.cloud/v1/ssh_keys/$id", $header, "");
+		$request->httpRequest("DELETE", "https://api.vultr.com/v2/ssh-keys/$id", $header, "");
 		$statusCode = $request->getStatusCode();
 		if($statusCode == 204){
 			$response = array('error' => false, 'message' => 'SSH Key successfully deleted');
@@ -252,11 +282,11 @@ class Vultr extends Provider {
 		$request->httpRequest("POST", "https://api.vultr.com/v2/startup-scripts", $header, $postData);
 		$response = $request->getResponse();
 		$decoded = json_decode($response);
-		if(array_key_exists('startup_script', $decoded)) {
+		if(isset($decoded->startup_script)){
 			$id = $decoded->startup_script->id;
 			return $id;
 		} else {
-			return null;
+			return false;
 		}
   }
   
