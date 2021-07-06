@@ -5,7 +5,7 @@ services:
         ports: 
             - "8001:80"
         volumes:
-            - ./www:/var/www/html/
+            - ./api:/var/www/html/api
         links:
             - db
         networks:
