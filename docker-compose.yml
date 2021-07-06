@@ -1,4 +1,4 @@
-version: "2"
+version: "1"
 services:
     www:
         build: .
@@ -15,12 +15,12 @@ services:
         ports: 
             - "3306:3306"
         environment:
-            MARIADB_DATABASE: myDb
+            MARIADB_DATABASE: cloud
             MARIADB_USER: user
             MARIADB_PASSWORD: test
             MARIADB_ROOT_PASSWORD: test
         volumes:
-            - ./dump:/docker-entrypoint-initdb.d
+            - ./sql:/docker-entrypoint-initdb.d
             - persistent:/var/lib/mysql
         networks:
             - default
