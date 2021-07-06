@@ -1,0 +1,38 @@
+version: "2"
+services:
+    www:
+        build: .
+        ports: 
+            - "8001:80"
+        volumes:
+            - ./www:/var/www/html/
+        links:
+            - db
+        networks:
+            - default
+    db:
+        image: mariadb
+        ports: 
+            - "3306:3306"
+        environment:
+            MARIADB_DATABASE: myDb
+            MARIADB_USER: user
+            MARIADB_PASSWORD: test
+            MARIADB_ROOT_PASSWORD: test
+        volumes:
+            - ./dump:/docker-entrypoint-initdb.d
+            - persistent:/var/lib/mysql
+        networks:
+            - default
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        links: 
+            - db:db
+        ports:
+            - 8000:80
+        environment:
+            MYSQL_USER: user
+            MYSQL_PASSWORD: test
+            MYSQL_ROOT_PASSWORD: test
+volumes:
+    persistent:
