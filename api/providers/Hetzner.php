@@ -179,8 +179,33 @@ class Hetzner extends Provider {
 		}
 		return $response;
 	}
-  public function create($hostname, $location, $plan, $os, $sshkey, $script){
-	  
+  public function create($hostname, $location, $plan, $os, $sshkey, $script = null){
+	   $request = new Request();
+		$apikey = $this->token;
+		$header = "Accept-language: en\r\n" .
+				  "Authorization: Bearer $apikey\r\n" . 
+			     "Content-type: application/json\r\n";
+		$postData = '{"name":"'.$hostname.'","location":"'.$location.'","server_type":"'.$plan.'","image":"'.$os.'","ssh_keys":['.$sshkey.'],"user_data":"'.$script.'"}';
+		echo $postData;
+		$request->httpRequest("POST", "https://api.hetzner.cloud/v1/servers", $header, $postData);
+		$response = $request->getResponse();
+		echo $response;
+		$decoded = json_decode($response);
+		if(!isset($decoded->error)){
+			$id = $decoded->server->id;
+			$osId = $decoded->server->image->id;
+			$os = $decoded->server->image->description;
+			$location = $decoded->server->datacenter->location->name;
+			$plan = $decoded->server->server_type->name;
+			$hostname = $decoded->server->name;
+			$status = $decoded->server->status;
+			
+			$server = array('id' => $id, 'hostname' => $hostname, 'status' => $status, 'os' => $os, 'osID' => $osId, 'location' => $location, 'plan' => $plan);
+			$response = array('error' => false, 'message' => 'Server successfully created', 'servers' => $server);
+		} else {
+			$response = array('error' => true, 'message' => 'Server could not be created');
+		}
+		return $response;
   }
    public function delete($id){
 	  $request = new Request();
@@ -218,11 +243,11 @@ class Hetzner extends Provider {
 		$request->httpRequest("POST", "https://api.hetzner.cloud/v1/ssh_keys", $header, $postData);
 		$response = $request->getResponse();
 		$decoded = json_decode($response);
-		if(array_key_exists('ssh_key', $decoded)) {
+		if(isset($decoded->ssh_key)){
 			$id = $decoded->ssh_key->id;
 			return $id;
 		} else {
-			return null;
+			return false;
 		}
   }
   
@@ -235,12 +260,22 @@ class Hetzner extends Provider {
 		$request->httpRequest("DELETE", "https://api.hetzner.cloud/v1/ssh_keys/$id", $header, "");
 		$statusCode = $request->getStatusCode();
 		if($statusCode == 204){
+		//	$response = true;
 			$response = array('error' => false, 'message' => 'SSH Key successfully deleted');
 		} else {
+		//	$response = false;
 			$response = array('error' => true, 'message' => 'SSH Key could not be deleted');
 		}
 		return $response;
   }
+  
+   public function createScript($script){
+	   return null;
+   }
+   
+   public function deleteScript($id){
+	   return null;
+   }
   
   public function stop($id){
 	  
