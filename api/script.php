@@ -84,6 +84,10 @@ if(!empty($_SERVER['HTTP_AUTHORIZATION'])){
 						} else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 							if (!empty($_GET['name'])) {
 								$input = file_get_contents('php://input');
+								$input = nl2br($input);
+								$input = str_replace('<br />', '\n', $input);
+								$input = str_replace('"', '\"', $input);
+								//$input = str_replace('\n', "\n", $input);
 								if ($input) {
 									$query = "SELECT NULL FROM scripts WHERE name=:name AND userid=:userid";
 									$stmt = $db->prepare($query);
@@ -122,6 +126,10 @@ if(!empty($_SERVER['HTTP_AUTHORIZATION'])){
 						} else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 							if (!empty($_GET['name'])) {
 								$input = file_get_contents('php://input');
+								$input = nl2br($input);
+								$input = str_replace('<br />', '\n', $input);
+								$input = str_replace('"', '\"', $input);
+							//	$input = str_replace('\n', "\n", $input);
 								if ($input) {
 									$query = "SELECT NULL FROM scripts WHERE name=:name AND userid=:userid";
 									$stmt = $db->prepare($query);
