@@ -210,19 +210,19 @@
 
 * **Success Response:**
 
-  * **Code:** 200 OK<br />
+ 	* **Code:** 200 OK<br />
        **Content:** `{ "error": true, "message": "Provider token successfully saved"}`
 
-	OR
- * **Code:** 200 OK<br />
-       **Content:** `{ "error": true, "message": "Provider token successfully updated"}`
+		OR
+	 * **Code:** 200 OK<br />
+       	**Content:** `{ "error": true, "message": "Provider token successfully updated"}`
 
-	OR
- * **Code:** 200 OK<br />
+		OR
+ 	* **Code:** 200 OK<br />
        **Content:** `{ "error": true, "message": "Token status successfully updated"}`
 	   
- 	OR
- * **Code:** 200 OK<br />
+ 		OR
+ 	* **Code:** 200 OK<br />
        **Content:** `{ "error": true, "message": "Token successfully deleted"}`
  
  
