@@ -1,6 +1,3 @@
-# Cloud Provider Control Panel
-Cloud Computing 
-Sommersemester 2021
 # API Documentation
 
 # Endpoints
@@ -440,7 +437,7 @@ curl --location --request GET 'http://localhost:8001/api/sshkey.php?name=test' \
   
 **Get server locations of providers**
 ----
-  Get available server location(s) of one or all providers
+  Get available server location(s) of one specific or all providers
 
 * **URL**
 
@@ -448,7 +445,7 @@ curl --location --request GET 'http://localhost:8001/api/sshkey.php?name=test' \
 
 * **Method:**
 
-  `GET` Get location(s) of all providers or one specific provider
+  `GET`
   
 * **URL Params**
 
@@ -469,17 +466,8 @@ curl --location --request GET 'http://localhost:8001/api/sshkey.php?name=test' \
 * **Success Response:**
 
   * **Code:** 200 OK<br />
-       **Content:** `{ "error": true, "message": "Startup script successfully saved"}`
+       **Content:** `{"error":false,"locations":{"id":"fsn1","country":"DE","city":"Falkenstein","provider":"Hetzner"}}`
 
-	OR
- * **Code:** 200 OK<br />
-       **Content:** `{ "error": true, "message": "Startup script successfully updated"}`
-
-	OR
- * **Code:** 200 OK<br />
-       **Content:** `{ "error": true, "message": "tartup script successfully deleted"}`
-	   
- 
  
 * **Error Response:**
 
@@ -497,7 +485,7 @@ curl --location --request GET 'http://localhost:8001/api/location.php?provider=h
     
 **Get server plans of providers**
 ----
-  Get available server plan(s) of one or all providers
+  Get available server plan(s) of one specific or all providers
 
 * **URL**
 
@@ -505,7 +493,7 @@ curl --location --request GET 'http://localhost:8001/api/location.php?provider=h
 
 * **Method:**
 
-  `GET` Get server plan(s) of all providers or one specific provider
+  `GET` 
   
 * **URL Params**
 
@@ -526,16 +514,8 @@ curl --location --request GET 'http://localhost:8001/api/location.php?provider=h
 * **Success Response:**
 
   * **Code:** 200 OK<br />
-       **Content:** `{ "error": true, "message": "Startup script successfully saved"}`
+       **Content:** `{"error":false,"plans":{"id":"cx11","cores":1,"memory":2048,"disk":20000,"bandwidth":20480000}}`
 
-	OR
- * **Code:** 200 OK<br />
-       **Content:** `{ "error": true, "message": "Startup script successfully updated"}`
-
-	OR
- * **Code:** 200 OK<br />
-       **Content:** `{ "error": true, "message": "tartup script successfully deleted"}`
-	   
  
  
 * **Error Response:**
@@ -547,6 +527,342 @@ curl --location --request GET 'http://localhost:8001/api/location.php?provider=h
 * **Sample Call:**
   ```curl
 curl --location --request GET 'http://localhost:8001/api/plan.php?provider=hetzner&id=cx11' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Barear <jwt token>' \
+  ```
+  
+  
+    
+  
+**Get server locations of providers**
+----
+  Get available server location(s) of one specific or all providers
+
+* **URL**
+
+  /location.php
+
+* **Method:**
+
+  `GET` 
+  
+* **URL Params**
+
+     **Optional:**
+ 
+  `provider=[string]` Provider name
+   `id=[string]` ID (name) of the location
+  
+*  **Data Params**
+
+      **Required:**
+	  
+    `Authorization: Bearer <jwt token>`
+	
+
+
+
+* **Success Response:**
+
+  * **Code:** 200 OK<br />
+       **Content:** `{"error":false,"locations":{"id":"fsn1","country":"DE","city":"Falkenstein","provider":"Hetzner"}}`
+
+ 
+* **Error Response:**
+
+  * **Code:** 400 BAD Request <br />
+    **Content:** `{ "error": true, "message": ""}`
+
+
+* **Sample Call:**
+  ```curl
+curl --location --request GET 'http://localhost:8001/api/plan.php?provider=hetzner&id=fsn1' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Barear <jwt token>' \
+  ```
+  
+    
+**Get operating systems of providers**
+----
+  Get available operating systems(s) of one or all providers
+
+* **URL**
+
+  /os.php
+
+* **Method:**
+
+  `GET` 
+  
+* **URL Params**
+
+     **Optional:**
+ 
+  `provider=[string]` Provider name
+   `id=[string]` ID (name) of the operating system
+    `family=[string]` Operating system family (e.g. debian, ubuntu)
+   
+  
+*  **Data Params**
+
+      **Required:**
+	  
+    `Authorization: Bearer <jwt token>`
+	
+
+
+
+* **Success Response:**
+
+  * **Code:** 200 OK<br />
+       **Content:** `{"error":false,"os":[{"id":2,"name":"Debian 9","family":"debian"},{"id":5924233,"name":"Debian 10","family":"debian"}]}`
+
+ 
+ 
+* **Error Response:**
+
+  * **Code:** 400 BAD Request <br />
+    **Content:** `{ "error": true, "message": ""}`
+
+
+* **Sample Call:**
+  ```curl
+curl --location --request GET 'http://localhost:8001/api/os.php?provider=hetzner&family=debian' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Barear <jwt token>' \
+  ```
+  
+  
+  
+    
+    
+**Create virtual servers**
+----
+  Create one or multiple virtual servers at a specific provider
+
+* **URL**
+
+  /create.php
+
+* **Method:**
+
+  `POST`
+  
+* **URL Params**
+
+     **Required:**
+	 
+ `hostname=[string]` Hostname of the server
+  `provider=[string]` Provider name
+   `location=[string]` ID (name) of the location
+    `os=[string]` ID (name) of the operating system
+	 `plan=[string]` ID (name) of the server plan
+	 `sshkey=[string]` Name of the SSH Key
+	   
+  **Optional:**
+ 
+  `amount=[integer]` Amount of servers that should be created (default: 1)
+   `script=[string]` Name of the shell startup script
+   
+  
+*  **Data Params**
+
+      **Required:**
+	  
+    `Authorization: Bearer <jwt token>`
+	
+
+
+
+* **Success Response:**
+
+  * **Code:** 200 OK<br />
+       **Content:** `{"error":false,"message":"Server successfully created","servers":{"id":13047474,"hostname":"testserver","status":"initializing","os":"Debian 10","osID":5924233,"location":"nbg1","plan":"cx11"}}`
+
+ 
+ 
+* **Error Response:**
+
+  * **Code:** 400 BAD Request <br />
+    **Content:** `{ "error": true, "message": "Server could not be created"}`
+
+
+* **Sample Call:**
+  ```curl
+curl --location --request POST 'http://localhost:8001/api/create.php?provider=hetzner&location=nbg1&os=5924233&plan=cx11&hostname=testserver&sshkey=test&script=test&amount=4' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Barear <jwt token>' \
+  ```
+  
+  
+      
+    
+**Delete virtual server**
+----
+ Delete a specific virtual servers at a specific provider
+
+* **URL**
+
+  /delete.php
+
+* **Method:**
+
+  `POST`
+  
+* **URL Params**
+
+     **Required:**
+	 
+  `provider=[string]` Provider name
+   `id=[string]` ID of the server
+
+   
+  
+*  **Data Params**
+
+      **Required:**
+	  
+    `Authorization: Bearer <jwt token>`
+	
+
+
+
+* **Success Response:**
+
+  * **Code:** 200 OK<br />
+       **Content:** `{"error":false,"message":"Server successfully deleted"}`
+
+ 
+ 
+* **Error Response:**
+
+  * **Code:** 400 BAD Request <br />
+    **Content:** `{ "error": true, "message": "Server could not be deleted"}`
+
+
+* **Sample Call:**
+  ```curl
+curl --location --request POST 'http://localhost:8001/api/delete.php?provider=hetzner&id=12870359' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Barear <jwt token>' \
+  ```
+      
+**List virtual server(s)**
+----
+ List a specific or all virtual servers of a specific or all providers
+
+* **URL**
+
+  /server.php
+
+* **Method:**
+
+  `GET`
+  
+* **URL Params**
+
+     **Optional:**
+	 
+  `provider=[string]` Provider name
+   `id=[string]` ID of the server
+
+   
+  
+*  **Data Params**
+
+      **Required:**
+	  
+    `Authorization: Bearer <jwt token>`
+	
+
+
+
+* **Success Response:**
+
+  * **Code:** 200 OK<br />
+       **Content:** `{"error":false,"servers":[{"id":13047474,"hostname":"testh","status":"running","created":1625686722,"ipv4":"116.203.100.32","ipv6":"2a01:4f8:c0c:76a0::\/64","location":"nbg1","os":"Debian 10","osID":5924233,"plan":"cx11","bandwidth":21990232555,"cores":1,"memory":2000,"disk":20000}]}`
+
+ 
+ 
+* **Error Response:**
+
+  * **Code:** 400 BAD Request <br />
+    **Content:** `{ "error": true, "message": "Server not found"}`
+
+
+* **Sample Call:**
+  ```curl
+curl --location --request GET 'http://localhost:8001/api/server.php?provider=vultr&id=id=09046fc7-3ae6-46a0-8e3e-29c9d9b12bac' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Barear <jwt token>' \
+  ```
+  
+  
+  **Control a virtual server**
+----
+ Boot, reboot or shutdown a specific virtual server
+
+* **URL**
+
+  /server.php
+
+* **Method:**
+
+  `GET`
+  
+* **URL Params**
+
+     **Required:**
+	 
+  `provider=[string]` Provider name
+   `id=[string]` ID of the server
+     `action=[string]` boot, reboot or shutdown
+   
+
+   
+  
+*  **Data Params**
+
+      **Required:**
+	  
+    `Authorization: Bearer <jwt token>`
+	
+
+
+
+* **Success Response:**
+
+
+ * **Code:** 200 OK <br />
+    **Content:** `{ "error": false, "message": "The server has been restarted successfully"}`
+
+OR 
+ 
+ * **Code:** 200 OK <br />
+    **Content:** `{ "error": false, "message": "The server has been started successfully"}`
+	
+OR 
+ * **Code:** 200 OK <br />
+    **Content:** `{ "error": false, "message": "The server has been stopped successfully"}`
+ 
+ 
+* **Error Response:**
+
+ * **Code:** 400 BAD Request <br />
+    **Content:** `{ "error": true, "message": "The server could not be restarted."}`
+
+OR 
+ 
+ * **Code:** 400 BAD Request <br />
+    **Content:** `{ "error": true, "message": "The server could not be started."}`
+	
+OR 
+ * **Code:** 400 BAD Request <br />
+    **Content:** `{ "error": true, "message": "The server could not be stopped."}`
+
+* **Sample Call:**
+  ```curl
+curl --location --request GET 'http://localhost:8001/api/control.php?action=reboot&provider=vultr&id=id=09046fc7-3ae6-46a0-8e3e-29c9d9b12bac' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Barear <jwt token>' \
   ```
