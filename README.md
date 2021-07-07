@@ -277,15 +277,15 @@
 
 * **Success Response:**
 
-  * **Code:** 200 OK<br />
+     * **Code:** 200 OK<br />
        **Content:** `{ "error": true, "message": "SSH key successfully saved"}`
 
-	OR
- * **Code:** 200 OK<br />
+		OR
+ 	* **Code:** 200 OK<br />
        **Content:** `{ "error": true, "message": "SSH key successfully updated"}`
 
-	OR
- * **Code:** 200 OK<br />
+		OR
+ 	* **Code:** 200 OK<br />
        **Content:** `{ "error": true, "message": "SSH key successfully deleted"}`
 	   
  
@@ -346,12 +346,12 @@
   * **Code:** 200 OK<br />
        **Content:** `{ "error": true, "message": "Startup script successfully saved"}`
 
-	OR
- * **Code:** 200 OK<br />
+		OR
+	 * **Code:** 200 OK<br />
        **Content:** `{ "error": true, "message": "Startup script successfully updated"}`
 
-	OR
- * **Code:** 200 OK<br />
+		OR
+ 	* **Code:** 200 OK<br />
        **Content:** `{ "error": true, "message": "tartup script successfully deleted"}`
 	   
  
@@ -785,7 +785,7 @@
   ```
   
   
-  **Control a virtual server**
+**Control a virtual server**
 ----
  Boot, reboot or shutdown a specific virtual server
 
