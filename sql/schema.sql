@@ -26,6 +26,14 @@ CREATE TABLE `providers` (
   `enabled` int(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Daten für Tabelle `providers`
+--
+
+INSERT INTO `providers` (`name`, `baseurl`, `enabled`) VALUES
+('Hetzner', 'https://api.hetzner.cloud/v1/', 1),
+('Vultr', 'https://api.vultr.com/v2/', 1);
+
 -- --------------------------------------------------------
 
 --
