@@ -186,10 +186,8 @@ class Hetzner extends Provider {
 				  "Authorization: Bearer $apikey\r\n" . 
 			     "Content-type: application/json\r\n";
 		$postData = '{"name":"'.$hostname.'","location":"'.$location.'","server_type":"'.$plan.'","image":"'.$os.'","ssh_keys":['.$sshkey.'],"user_data":"'.$script.'"}';
-		echo $postData;
 		$request->httpRequest("POST", "https://api.hetzner.cloud/v1/servers", $header, $postData);
 		$response = $request->getResponse();
-		echo $response;
 		$decoded = json_decode($response);
 		if(!isset($decoded->error)){
 			$id = $decoded->server->id;
@@ -223,14 +221,129 @@ class Hetzner extends Provider {
 		}
 		return $response;
    }
-   public function status(){
-	  
-  }
-   public function info(){
-	  
-  }
-   public function start(){
-	  
+       public function servers($id = null, $allProviders = false){
+	  $request = new Request();
+		$apikey = $this->token;
+		$header = "Accept-language: en\r\n" .
+				  "Authorization: Bearer $apikey\r\n" . 
+			     "Content-type: application/json\r\n";
+		$request->httpRequest("GET", "https://api.hetzner.cloud/v1/servers", $header, "");
+		$response = $request->getResponse();
+		$decoded = json_decode($response);
+		$response = array('error' => false);
+		if($allProviders == true){
+			$planArray = array('servers' => array('Hetzner' => array()));
+		} else {
+			$planArray = array('servers' => array());
+		}
+		foreach($decoded->servers as $instances){
+			if (is_null($id)) {
+				if($allProviders == true){
+					$planArray['servers']['Hetzner'][] = array(
+						"id" => $instances->id,
+						"hostname" => $instances->name,
+						"status" => $instances->status,
+						"created" => strtotime($instances->created),
+						"ipv4" => $instances->public_net->ipv4->ip,
+						"ipv6" => $instances->public_net->ipv6->ip,
+						"location" => $instances->datacenter->location->name,
+						"os" => $instances->image->description,
+						"osID" => $instances->image->id,
+						"plan" => $instances->server_type->name,
+						"bandwidth" => floor($instances->included_traffic / 1000),
+						"cores" => $instances->server_type->cores,
+						"memory" => $instances->server_type->memory * 1000,
+						"disk" => $instances->server_type->disk * 1000
+					);
+				} else {
+					$planArray['servers'][] = array(
+						"id" => $instances->id,
+						"hostname" => $instances->name,
+						"status" => $instances->status,
+						"created" => strtotime($instances->created),
+						"ipv4" => $instances->public_net->ipv4->ip,
+						"ipv6" => $instances->public_net->ipv6->ip,
+						"location" => $instances->datacenter->location->name,
+						"os" => $instances->image->description,
+						"osID" => $instances->image->id,
+						"plan" => $instances->server_type->name,
+						"bandwidth" => floor($instances->included_traffic / 1000),
+						"cores" => $instances->server_type->cores,
+						"memory" => $instances->server_type->memory * 1000,
+						"disk" => $instances->server_type->disk * 1000
+					);
+				}
+			} else {
+				if($instances->id == $id){
+					if($allProviders == false){
+						$response += array("servers" => array(
+										"id" => $instances->id,
+										"hostname" => $instances->name,
+										"status" => $instances->status,
+										"created" => strtotime($instances->created),
+										"ipv4" => $instances->public_net->ipv4->ip,
+										"ipv6" => $instances->public_net->ipv6->ip,
+										"location" => $instances->datacenter->location->name,
+										"os" => $instances->image->description,
+										"osID" => $instances->image->id,
+										"plan" => $instances->server_type->name,
+										"bandwidth" => floor($instances->included_traffic / 1000),
+										"cores" => $instances->server_type->cores,
+										"memory" => $instances->server_type->memory * 1000,
+										"disk" => $instances->server_type->disk * 1000
+										)
+								);
+					} else {
+						$response = array("error" => true, "message" => "Missing provider parameter");
+					}
+					break;
+				}
+			}
+		}
+		if (is_null($id)) {
+			$response += $planArray;
+		} else if (count($response) < 2) {
+			$response = array("error" => true, "message" => "Server not found");
+		}
+		return $response;
+	}
+   public function control($id, $action){
+	   $request = new Request();
+		$apikey = $this->token;
+		$header = "Accept-language: en\r\n" .
+				  "Authorization: Bearer $apikey\r\n" . 
+			     "Content-type: application/json\r\n";
+	   if($action == "reboot"){
+		   $request->httpRequest("POST", "https://api.hetzner.cloud/v1/servers/$id/actions/reboot", $header, "");
+		   $response = $request->getResponse();
+		   $decoded = json_decode($response);
+		    if(!isset($decoded->error->code)){
+			    $response = array("error" => false, "message" => "The server has been restarted successfully.");
+		   } else {
+			   $response = array("error" => true, "message" => "The server could not be restarted.");
+		   }
+	   } else if ($action == "start" OR $action == "boot") {
+		   $request->httpRequest("POST", "https://api.hetzner.cloud/v1/servers/$id/actions/poweron", $header, "");
+		   $response = $request->getResponse();
+		   $decoded = json_decode($response);
+		    if(!isset($decoded->error->code)){
+			    $response = array("error" => false, "message" => "The server has been started successfully.");
+		   } else {
+			   $response = array("error" => true, "message" => "The server could not be started.");
+		   }
+	   } else if ($action == "stop" OR $action == "shutdown") {
+		   $request->httpRequest("POST", "https://api.hetzner.cloud/v1/servers/$id/actions/shutdown", $header, "");
+		   $response = $request->getResponse();
+		   $decoded = json_decode($response);
+		   if(!isset($decoded->error->code)){
+			    $response = array("error" => false, "message" => "The server has been stopped successfully.");
+		   } else {
+			   $response = array("error" => true, "message" => "The server could not be stopped.");
+		   }
+	   } else {
+		   $response = array("error" => true, "message" => "Unknown action");
+	   }
+	   return $response;  
   }
   public function createSSHKey($key){
 	$name = uniqid();
@@ -276,9 +389,5 @@ class Hetzner extends Provider {
    public function deleteScript($id){
 	   return null;
    }
-  
-  public function stop($id){
-	  
-  }
 }	
 ?>
