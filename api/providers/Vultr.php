@@ -222,17 +222,126 @@ class Vultr extends Provider {
 		}
 		return $response;
    }
-   public function status(){
-	  
-  }
-   public function info(){
-	  
-  }
-   public function start(){
-	  
-  }
-   public function stop($id){
-	  
+    public function servers($id = null, $allProviders = false){
+	  $request = new Request();
+		$apikey = $this->token;
+		$header = "Accept-language: en\r\n" .
+				  "Authorization: Bearer $apikey\r\n" . 
+			     "Content-type: application/json\r\n";
+		$request->httpRequest("GET", "https://api.vultr.com/v2/instances", $header, "");
+		$response = $request->getResponse();
+		$decoded = json_decode($response);
+		$response = array('error' => false);
+		if($allProviders == true){
+			$planArray = array('servers' => array('Vultr' => array()));
+		} else {
+			$planArray = array('servers' => array());
+		}
+		foreach($decoded->instances as $instances){
+			if (is_null($id)) {
+				if($allProviders == true){
+					$planArray['servers']['Vultr'][] = array(
+						"id" => $instances->id,
+						"hostname" => $instances->label,
+						"status" => $instances->status,
+						"created" => strtotime($instances->date_created),
+						"ipv4" => $instances->main_ip,
+						"ipv6" => $instances->v6_network . "/" . $instances->v6_network_size,
+						"location" => $instances->region,
+						"os" => $instances->os,
+						"osID" => $instances->os_id,
+						"plan" => $instances->plan,
+						"bandwidth" => $instances->allowed_bandwidth * 1000,
+						"cores" => $instances->vcpu_count,
+						"memory" => $instances->ram,
+						"disk" => $instances->disk * 1000
+					);
+				} else {
+					$planArray['servers'][] = array(
+						"id" => $instances->id,
+						"hostname" => $instances->label,
+						"status" => $instances->status,
+						"created" => strtotime($instances->date_created),
+						"ipv4" => $instances->main_ip,
+						"ipv6" => $instances->v6_network . "/" . $instances->v6_network_size,
+						"location" => $instances->region,
+						"os" => $instances->os,
+						"osID" => $instances->os_id,
+						"plan" => $instances->plan,
+						"bandwidth" => $instances->allowed_bandwidth * 1000,
+						"cores" => $instances->vcpu_count,
+						"memory" => $instances->ram,
+						"disk" => $instances->disk * 1000
+					);
+				}
+			} else {
+				if($instances->id == $id){
+					if($allProviders == false){
+						$response += array("servers" => array(
+										"id" => $instances->id,
+										"hostname" => $instances->label,
+										"status" => $instances->status,
+										"created" => strtotime($instances->date_created),
+										"ipv4" => $instances->main_ip,
+										"ipv6" => $instances->v6_network . "/" . $instances->v6_network_size,
+										"location" => $instances->region,
+										"os" => $instances->os,
+										"osID" => $instances->os_id,
+										"plan" => $instances->plan,
+										"bandwidth" => $instances->allowed_bandwidth * 1000,
+										"cores" => $instances->vcpu_count,
+										"memory" => $instances->ram,
+										"disk" => $instances->disk * 1000
+										)
+								);
+					} else {
+						$response = array("error" => true, "message" => "Missing provider parameter");
+					}
+					break;
+				}
+			}
+		}
+		if (is_null($id)) {
+			$response += $planArray;
+		} else if (count($response) < 2) {
+			$response = array("error" => true, "message" => "Server not found");
+		}
+		return $response;
+	}
+   public function control($id, $action){
+	   $request = new Request();
+		$apikey = $this->token;
+		$header = "Accept-language: en\r\n" .
+				  "Authorization: Bearer $apikey\r\n" . 
+			     "Content-type: application/json\r\n";
+	   if($action == "reboot"){
+		   $request->httpRequest("POST", "https://api.vultr.com/v2/instances/$id/reboot", $header, "");
+		   $statusCode = $request->getStatusCode();
+			if($statusCode == 204){
+			    $response = array("error" => false, "message" => "The server has been restarted successfully.");
+		   } else {
+			   $response = array("error" => true, "message" => "The server could not be restarted.");
+		   }
+	   } else if ($action == "start" OR $action == "boot") {
+		   $request->httpRequest("POST", "https://api.vultr.com/v2/instances/$id/start", $header, "");
+		   $statusCode = $request->getStatusCode();
+			if($statusCode == 204){
+			    $response = array("error" => false, "message" => "The server has been started successfully.");
+		   } else {
+			   $response = array("error" => true, "message" => "The server could not be started.");
+		   }
+	   } else if ($action == "stop" OR $action == "shutdown") {
+		   $request->httpRequest("POST", "https://api.vultr.com/v2/instances/$id/halt", $header, "");
+		   $statusCode = $request->getStatusCode();
+		   if($statusCode == 204){
+			    $response = array("error" => false, "message" => "The server has been stopped successfully.");
+		   } else {
+			   $response = array("error" => true, "message" => "The server could not be stopped.");
+		   }
+	   } else {
+		   $response = array("error" => true, "message" => "Unknown action");
+	   }
+	   return $response;  
   }
   
     public function createSSHKey($key){
