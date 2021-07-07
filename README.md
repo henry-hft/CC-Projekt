@@ -106,18 +106,18 @@
 
   ```curl
   curl --location --request POST 'http://localhost:8001/api/login.php' \
---header 'Content-Type: application/json' \
---form 'username="test"' \
---form 'password="123456"'
+	--header 'Content-Type: application/json' \
+	--form 'username="test"' \
+	--form 'password="123456"'
   ```
   
   OR
   
     ```curl
   curl --location --request POST 'http://localhost:8001/api/login.php' \
---header 'Content-Type: application/json' \
---form 'email="test@test.de"' \
---form 'password="123456"'
+	--header 'Content-Type: application/json' \
+	--form 'email="test@test.de"' \
+	--form 'password="123456"'
   ```
   
   
@@ -172,10 +172,9 @@
 
 * **Sample Call:**
   ```curl
-curl --location --request GET 'http://localhost:8001/api/provider.php' \
---header 'Content-Type: application/json' \
---header 'Authorization: Barear <jwt token>' \
-
+  curl --location --request GET 'http://localhost:8001/api/provider.php' \
+	--header 'Content-Type: application/json' \
+	--header 'Authorization: Barear <jwt token>' \
   ```
 OR
   ```curl
@@ -205,7 +204,7 @@ curl --location --request GET 'http://localhost:8001/api/provider.php?name=vultr
  
    `provider=[string]` Provider name
     `token=[string]` Provider API Key
-	`enable=[bool]` Enable/disable provider
+    `enable=[bool]` Enable/disable provider
   
 *  **Data Params**
 
@@ -240,14 +239,10 @@ curl --location --request GET 'http://localhost:8001/api/provider.php?name=vultr
 
 * **Sample Call:**
   ```curl
-curl --location --request GET 'http://localhost:8001/api/token.php' \
---header 'Content-Type: application/json' \
---header 'Authorization: Barear <jwt token>' \
-
+  curl --location --request GET 'http://localhost:8001/api/token.php' \
+	--header 'Content-Type: application/json' \
+	--header 'Authorization: Barear <jwt token>' \
   ```
-
-
-  
   
 **Manage SSH Keys**
 ----
@@ -260,7 +255,7 @@ curl --location --request GET 'http://localhost:8001/api/token.php' \
 * **Method:**
 
   `GET` Get SSH Keys from database
-   `POST`   Insert SSH Keys to database
+  `POST` Insert SSH Keys to database
   `PUT` Update SSH Keys in database 
   `DELETE` Delete SSH Keys from database
   
@@ -304,10 +299,10 @@ curl --location --request GET 'http://localhost:8001/api/token.php' \
 
 * **Sample Call:**
   ```curl
-curl --location --request GET 'http://localhost:8001/api/sshkey.php?name=test' \
---header 'Content-Type: application/json' \
---header 'Authorization: Barear <jwt token>' \
---data-raw '<ssh key>'
+  curl --location --request GET 'http://localhost:8001/api/sshkey.php?name=test' \
+	--header 'Content-Type: application/json' \
+	--header 'Authorization: Barear <jwt token>' \
+	--data-raw '<ssh key>'
   ```
   
   
@@ -322,7 +317,7 @@ curl --location --request GET 'http://localhost:8001/api/sshkey.php?name=test' \
 * **Method:**
 
   `GET` Get startup shell scripts from database
-   `POST`   Insert startup shell scripts to database
+  `POST` Insert startup shell scripts to database
   `PUT` Update startup shell scripts in database 
   `DELETE` Delete startup shell scripts from database
   
@@ -366,10 +361,10 @@ curl --location --request GET 'http://localhost:8001/api/sshkey.php?name=test' \
 
 * **Sample Call:**
   ```curl
-curl --location --request GET 'http://localhost:8001/api/script.php?name=test' \
---header 'Content-Type: application/json' \
---header 'Authorization: Barear <jwt token>' \
---data-raw '<shell script>'
+  curl --location --request GET 'http://localhost:8001/api/script.php?name=test' \
+	--header 'Content-Type: application/json' \
+	--header 'Authorization: Barear <jwt token>' \
+	--data-raw '<shell script>'
   ```
 
   
@@ -384,7 +379,7 @@ curl --location --request GET 'http://localhost:8001/api/script.php?name=test' \
 * **Method:**
 
   `GET` Get SSH Keys from database
-   `POST`   Insert SSH Keys to database
+  `POST` Insert SSH Keys to database
   `PUT` Update SSH Keys in database 
   `DELETE` Delete SSH Keys from database
   
@@ -428,10 +423,10 @@ curl --location --request GET 'http://localhost:8001/api/script.php?name=test' \
 
 * **Sample Call:**
   ```curl
-curl --location --request GET 'http://localhost:8001/api/sshkey.php?name=test' \
---header 'Content-Type: application/json' \
---header 'Authorization: Barear <jwt token>' \
---data-raw '<ssh key>'
+  curl --location --request GET 'http://localhost:8001/api/sshkey.php?name=test' \
+	--header 'Content-Type: application/json' \
+	--header 'Authorization: Barear <jwt token>' \
+	--data-raw '<ssh key>'
   ```
   
   
@@ -452,15 +447,13 @@ curl --location --request GET 'http://localhost:8001/api/sshkey.php?name=test' \
      **Optional:**
  
   `provider=[string]` Provider name
-   `id=[string]` ID (name) of the location
+  `id=[string]` ID (name) of the location
   
 *  **Data Params**
 
       **Required:**
 	  
     `Authorization: Bearer <jwt token>`
-	
-
 
 
 * **Success Response:**
@@ -477,9 +470,9 @@ curl --location --request GET 'http://localhost:8001/api/sshkey.php?name=test' \
 
 * **Sample Call:**
   ```curl
-curl --location --request GET 'http://localhost:8001/api/location.php?provider=hetzner&id=fsn1' \
---header 'Content-Type: application/json' \
---header 'Authorization: Barear <jwt token>' \
+  curl --location --request GET 'http://localhost:8001/api/location.php?provider=hetzner&id=fsn1' \
+	--header 'Content-Type: application/json' \
+	--header 'Authorization: Barear <jwt token>' \
   ```
   
     
@@ -500,16 +493,13 @@ curl --location --request GET 'http://localhost:8001/api/location.php?provider=h
      **Optional:**
  
   `provider=[string]` Provider name
-   `id=[string]` ID (name) of the server plan
+  `id=[string]` ID (name) of the server plan
   
 *  **Data Params**
 
       **Required:**
 	  
     `Authorization: Bearer <jwt token>`
-	
-
-
 
 * **Success Response:**
 
@@ -526,9 +516,9 @@ curl --location --request GET 'http://localhost:8001/api/location.php?provider=h
 
 * **Sample Call:**
   ```curl
-curl --location --request GET 'http://localhost:8001/api/plan.php?provider=hetzner&id=cx11' \
---header 'Content-Type: application/json' \
---header 'Authorization: Barear <jwt token>' \
+  curl --location --request GET 'http://localhost:8001/api/plan.php?provider=hetzner&id=cx11' \
+	--header 'Content-Type: application/json' \
+	--header 'Authorization: Barear <jwt token>' \
   ```
   
   
@@ -551,7 +541,7 @@ curl --location --request GET 'http://localhost:8001/api/plan.php?provider=hetzn
      **Optional:**
  
   `provider=[string]` Provider name
-   `id=[string]` ID (name) of the location
+  `id=[string]` ID (name) of the location
   
 *  **Data Params**
 
@@ -559,9 +549,6 @@ curl --location --request GET 'http://localhost:8001/api/plan.php?provider=hetzn
 	  
     `Authorization: Bearer <jwt token>`
 	
-
-
-
 * **Success Response:**
 
   * **Code:** 200 OK<br />
@@ -576,9 +563,9 @@ curl --location --request GET 'http://localhost:8001/api/plan.php?provider=hetzn
 
 * **Sample Call:**
   ```curl
-curl --location --request GET 'http://localhost:8001/api/plan.php?provider=hetzner&id=fsn1' \
---header 'Content-Type: application/json' \
---header 'Authorization: Barear <jwt token>' \
+  curl --location --request GET 'http://localhost:8001/api/plan.php?provider=hetzner&id=fsn1' \
+	--header 'Content-Type: application/json' \
+	--header 'Authorization: Barear <jwt token>' \
   ```
   
     
@@ -599,8 +586,8 @@ curl --location --request GET 'http://localhost:8001/api/plan.php?provider=hetzn
      **Optional:**
  
   `provider=[string]` Provider name
-   `id=[string]` ID (name) of the operating system
-    `family=[string]` Operating system family (e.g. debian, ubuntu)
+  `id=[string]` ID (name) of the operating system
+  `family=[string]` Operating system family (e.g. debian, ubuntu)
    
   
 *  **Data Params**
@@ -609,16 +596,11 @@ curl --location --request GET 'http://localhost:8001/api/plan.php?provider=hetzn
 	  
     `Authorization: Bearer <jwt token>`
 	
-
-
-
 * **Success Response:**
 
   * **Code:** 200 OK<br />
        **Content:** `{"error":false,"os":[{"id":2,"name":"Debian 9","family":"debian"},{"id":5924233,"name":"Debian 10","family":"debian"}]}`
 
- 
- 
 * **Error Response:**
 
   * **Code:** 400 BAD Request <br />
@@ -627,15 +609,11 @@ curl --location --request GET 'http://localhost:8001/api/plan.php?provider=hetzn
 
 * **Sample Call:**
   ```curl
-curl --location --request GET 'http://localhost:8001/api/os.php?provider=hetzner&family=debian' \
---header 'Content-Type: application/json' \
---header 'Authorization: Barear <jwt token>' \
+  curl --location --request GET 'http://localhost:8001/api/os.php?provider=hetzner&family=debian' \
+	--header 'Content-Type: application/json' \
+	--header 'Authorization: Barear <jwt token>' \
   ```
   
-  
-  
-    
-    
 **Create virtual servers**
 ----
   Create one or multiple virtual servers at a specific provider
@@ -654,15 +632,15 @@ curl --location --request GET 'http://localhost:8001/api/os.php?provider=hetzner
 	 
  `hostname=[string]` Hostname of the server
   `provider=[string]` Provider name
-   `location=[string]` ID (name) of the location
-    `os=[string]` ID (name) of the operating system
-	 `plan=[string]` ID (name) of the server plan
-	 `sshkey=[string]` Name of the SSH Key
+  `location=[string]` ID (name) of the location
+  `os=[string]` ID (name) of the operating system
+  `plan=[string]` ID (name) of the server plan
+  `sshkey=[string]` Name of the SSH Key
 	   
   **Optional:**
  
   `amount=[integer]` Amount of servers that should be created (default: 1)
-   `script=[string]` Name of the shell startup script
+  `script=[string]` Name of the shell startup script
    
   
 *  **Data Params**
@@ -671,8 +649,6 @@ curl --location --request GET 'http://localhost:8001/api/os.php?provider=hetzner
 	  
     `Authorization: Bearer <jwt token>`
 	
-
-
 
 * **Success Response:**
 
@@ -689,13 +665,10 @@ curl --location --request GET 'http://localhost:8001/api/os.php?provider=hetzner
 
 * **Sample Call:**
   ```curl
-curl --location --request POST 'http://localhost:8001/api/create.php?provider=hetzner&location=nbg1&os=5924233&plan=cx11&hostname=testserver&sshkey=test&script=test&amount=4' \
---header 'Content-Type: application/json' \
---header 'Authorization: Barear <jwt token>' \
+  curl --location --request POST 'http://localhost:8001/api/create.php?provider=hetzner&location=nbg1&os=5924233&plan=cx11&hostname=testserver&sshkey=test&script=test&amount=4' \
+	--header 'Content-Type: application/json' \
+	--header 'Authorization: Barear <jwt token>' \
   ```
-  
-  
-      
     
 **Delete virtual server**
 ----
@@ -714,23 +687,18 @@ curl --location --request POST 'http://localhost:8001/api/create.php?provider=he
      **Required:**
 	 
   `provider=[string]` Provider name
-   `id=[string]` ID of the server
+  `id=[string]` ID of the server
 
-   
-  
 *  **Data Params**
 
       **Required:**
 	  
     `Authorization: Bearer <jwt token>`
 	
-
-
-
 * **Success Response:**
 
   * **Code:** 200 OK<br />
-       **Content:** `{"error":false,"message":"Server successfully deleted"}`
+    **Content:** `{"error":false,"message":"Server successfully deleted"}`
 
  
  
@@ -742,9 +710,9 @@ curl --location --request POST 'http://localhost:8001/api/create.php?provider=he
 
 * **Sample Call:**
   ```curl
-curl --location --request POST 'http://localhost:8001/api/delete.php?provider=hetzner&id=12870359' \
---header 'Content-Type: application/json' \
---header 'Authorization: Barear <jwt token>' \
+  curl --location --request POST 'http://localhost:8001/api/delete.php?provider=hetzner&id=12870359' \
+	--header 'Content-Type: application/json' \
+	--header 'Authorization: Barear <jwt token>' \
   ```
       
 **List virtual server(s)**
@@ -764,9 +732,7 @@ curl --location --request POST 'http://localhost:8001/api/delete.php?provider=he
      **Optional:**
 	 
   `provider=[string]` Provider name
-   `id=[string]` ID of the server
-
-   
+  `id=[string]` ID of the server 
   
 *  **Data Params**
 
@@ -774,15 +740,11 @@ curl --location --request POST 'http://localhost:8001/api/delete.php?provider=he
 	  
     `Authorization: Bearer <jwt token>`
 	
-
-
-
 * **Success Response:**
 
   * **Code:** 200 OK<br />
        **Content:** `{"error":false,"servers":[{"id":13047474,"hostname":"testh","status":"running","created":1625686722,"ipv4":"116.203.100.32","ipv6":"2a01:4f8:c0c:76a0::\/64","location":"nbg1","os":"Debian 10","osID":5924233,"plan":"cx11","bandwidth":21990232555,"cores":1,"memory":2000,"disk":20000}]}`
 
- 
  
 * **Error Response:**
 
@@ -792,9 +754,9 @@ curl --location --request POST 'http://localhost:8001/api/delete.php?provider=he
 
 * **Sample Call:**
   ```curl
-curl --location --request GET 'http://localhost:8001/api/server.php?provider=vultr&id=id=09046fc7-3ae6-46a0-8e3e-29c9d9b12bac' \
---header 'Content-Type: application/json' \
---header 'Authorization: Barear <jwt token>' \
+  curl --location --request GET 'http://localhost:8001/api/server.php?provider=vultr&id=id=09046fc7-3ae6-46a0-8e3e-29c9d9b12bac' \
+	--header 'Content-Type: application/json' \
+	--header 'Authorization: Barear <jwt token>' \
   ```
   
   
@@ -815,20 +777,14 @@ curl --location --request GET 'http://localhost:8001/api/server.php?provider=vul
      **Required:**
 	 
   `provider=[string]` Provider name
-   `id=[string]` ID of the server
-     `action=[string]` boot, reboot or shutdown
-   
-
-   
+  `id=[string]` ID of the server
+  `action=[string]` boot, reboot or shutdown
   
 *  **Data Params**
 
       **Required:**
 	  
     `Authorization: Bearer <jwt token>`
-	
-
-
 
 * **Success Response:**
 
@@ -862,7 +818,7 @@ OR
 
 * **Sample Call:**
   ```curl
-curl --location --request GET 'http://localhost:8001/api/control.php?action=reboot&provider=vultr&id=id=09046fc7-3ae6-46a0-8e3e-29c9d9b12bac' \
---header 'Content-Type: application/json' \
---header 'Authorization: Barear <jwt token>' \
+  curl --location --request GET 'http://localhost:8001/api/control.php?action=reboot&provider=vultr&id=id=09046fc7-3ae6-46a0-8e3e-29c9d9b12bac' \	
+	--header 'Content-Type: application/json' \
+	--header 'Authorization: Barear <jwt token>' \
   ```
