@@ -57,10 +57,10 @@
 
   ```curl
   curl --location --request POST 'http://localhost:8001/api/register.php' \
---header 'Content-Type: application/json' \
---form 'username="test"' \
---form 'email="test@test.de"' \
---form 'password="123456"'
+	--header 'Content-Type: application/json' \
+	--form 'username="test"' \
+	--form 'email="test@test.de"' \
+	--form 'password="123456"'
   ```
 
 **Login**
