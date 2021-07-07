@@ -820,12 +820,12 @@
  	* **Code:** 200 OK <br />
     	**Content:** `{ "error": false, "message": "The server has been restarted successfully"}`
 
-	OR 
+		OR 
  
  	* **Code:** 200 OK <br />
   	  **Content:** `{ "error": false, "message": "The server has been started successfully"}`
 	
-	OR 
+		OR 
  	* **Code:** 200 OK <br />
   	  **Content:** `{ "error": false, "message": "The server has been stopped successfully"}`
  
@@ -835,12 +835,12 @@
 	 * **Code:** 400 BAD Request <br />
   	  **Content:** `{ "error": true, "message": "The server could not be restarted."}`
 
-	OR 
+		OR 
  
  	* **Code:** 400 BAD Request <br />
   	  **Content:** `{ "error": true, "message": "The server could not be started."}`
 	
-	OR 
+		OR 
 	 * **Code:** 400 BAD Request <br />
   	  **Content:** `{ "error": true, "message": "The server could not be stopped."}`
 
