@@ -86,6 +86,7 @@
    **Required:**
  
    `username=[string]` OR  `email=[string]`
+   
    `password=[string]`
 
 
@@ -198,7 +199,9 @@ curl --location --request GET 'http://localhost:8001/api/provider.php?name=vultr
 * **Method:**
 
   `GET` Get provider API Key(s) from database
+  
   `PUT` Update provider API Key in database / Insert provider API Key to database
+  
   `DELETE` Delete provider API Key from database
   
 * **URL Params**
@@ -206,8 +209,11 @@ curl --location --request GET 'http://localhost:8001/api/provider.php?name=vultr
      **Optional:**
  
    `provider=[string]` Provider name
+   
     `token=[string]` Provider API Key
+    
     `enable=[bool]` Enable/disable provider
+    
   
 *  **Data Params**
 
@@ -258,9 +264,13 @@ curl --location --request GET 'http://localhost:8001/api/provider.php?name=vultr
 * **Method:**
 
   `GET` Get SSH Keys from database
+  
   `POST` Insert SSH Keys to database
+  
   `PUT` Update SSH Keys in database 
+  
   `DELETE` Delete SSH Keys from database
+  
   
 * **URL Params**
 
@@ -320,9 +330,13 @@ curl --location --request GET 'http://localhost:8001/api/provider.php?name=vultr
 * **Method:**
 
   `GET` Get startup shell scripts from database
+  
   `POST` Insert startup shell scripts to database
+  
   `PUT` Update startup shell scripts in database 
+  
   `DELETE` Delete startup shell scripts from database
+  
   
 * **URL Params**
 
@@ -382,9 +396,13 @@ curl --location --request GET 'http://localhost:8001/api/provider.php?name=vultr
 * **Method:**
 
   `GET` Get SSH Keys from database
+  
   `POST` Insert SSH Keys to database
+  
   `PUT` Update SSH Keys in database 
+  
   `DELETE` Delete SSH Keys from database
+  
   
 * **URL Params**
 
@@ -450,7 +468,9 @@ curl --location --request GET 'http://localhost:8001/api/provider.php?name=vultr
      **Optional:**
  
   `provider=[string]` Provider name
+  
   `id=[string]` ID (name) of the location
+  
   
 *  **Data Params**
 
@@ -496,6 +516,7 @@ curl --location --request GET 'http://localhost:8001/api/provider.php?name=vultr
      **Optional:**
  
   `provider=[string]` Provider name
+  
   `id=[string]` ID (name) of the server plan
   
 *  **Data Params**
@@ -544,7 +565,9 @@ curl --location --request GET 'http://localhost:8001/api/provider.php?name=vultr
      **Optional:**
  
   `provider=[string]` Provider name
+  
   `id=[string]` ID (name) of the location
+  
   
 *  **Data Params**
 
@@ -589,7 +612,9 @@ curl --location --request GET 'http://localhost:8001/api/provider.php?name=vultr
      **Optional:**
  
   `provider=[string]` Provider name
+  
   `id=[string]` ID (name) of the operating system
+  
   `family=[string]` Operating system family (e.g. debian, ubuntu)
    
   
@@ -633,16 +658,23 @@ curl --location --request GET 'http://localhost:8001/api/provider.php?name=vultr
 
      **Required:**
 	 
- `hostname=[string]` Hostname of the server
+  `hostname=[string]` Hostname of the server
+  
   `provider=[string]` Provider name
+  
   `location=[string]` ID (name) of the location
+  
   `os=[string]` ID (name) of the operating system
+  
   `plan=[string]` ID (name) of the server plan
+  
   `sshkey=[string]` Name of the SSH Key
+  
 	   
   **Optional:**
  
   `amount=[integer]` Amount of servers that should be created (default: 1)
+  
   `script=[string]` Name of the shell startup script
    
   
@@ -690,7 +722,9 @@ curl --location --request GET 'http://localhost:8001/api/provider.php?name=vultr
      **Required:**
 	 
   `provider=[string]` Provider name
+  
   `id=[string]` ID of the server
+  
 
 *  **Data Params**
 
@@ -735,7 +769,9 @@ curl --location --request GET 'http://localhost:8001/api/provider.php?name=vultr
      **Optional:**
 	 
   `provider=[string]` Provider name
+  
   `id=[string]` ID of the server 
+  
   
 *  **Data Params**
 
@@ -780,8 +816,11 @@ curl --location --request GET 'http://localhost:8001/api/provider.php?name=vultr
      **Required:**
 	 
   `provider=[string]` Provider name
+  
   `id=[string]` ID of the server
+  
   `action=[string]` boot, reboot or shutdown
+  
   
 *  **Data Params**
 
