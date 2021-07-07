@@ -152,21 +152,7 @@
 * **Success Response:**
 
   * **Code:** 200 OK<br />
-    **Content:** {
-    "error": false,
-    "proivders": [
-        {
-            "name": "Hetzner",
-            "baseurl": "https://api.hetzner.cloud/v1/",
-            "enabled": true
-        },
-        {
-            "name": "Vultr",
-            "baseurl": "https://api.vultr.com/v2/",
-            "enabled": true
-        }
-    ]
-}
+    **Content:** `{"error":false,"proivders":[{"name":"Hetzner","baseurl":"https://api.hetzner.cloud/v1/","enabled":true},{"name":"Vultr","baseurl":"https://api.vultr.com/v2/","enabled":true}]}`
  
 * **Error Response:**
 
@@ -180,13 +166,13 @@
 	--header 'Content-Type: application/json' \
 	--header 'Authorization: Barear <jwt token>' \
   ```
-OR
-  ```curl
-curl --location --request GET 'http://localhost:8001/api/provider.php?name=vultr' \
---header 'Content-Type: application/json' \
---header 'Authorization: Barear <jwt token>' \
+	OR
+ 	 ```curl
+	curl --location --request GET 'http://localhost:8001/api/provider.php?name=vultr' \
+	--header 'Content-Type: application/json' \
+	--header 'Authorization: Barear <jwt token>' \
 
-  ```
+ 	 ```
 
 **Manage provider API Keys**
 ----
@@ -831,32 +817,32 @@ curl --location --request GET 'http://localhost:8001/api/provider.php?name=vultr
 * **Success Response:**
 
 
- * **Code:** 200 OK <br />
-    **Content:** `{ "error": false, "message": "The server has been restarted successfully"}`
+ 	* **Code:** 200 OK <br />
+    	**Content:** `{ "error": false, "message": "The server has been restarted successfully"}`
 
-OR 
+	OR 
  
- * **Code:** 200 OK <br />
-    **Content:** `{ "error": false, "message": "The server has been started successfully"}`
+ 	* **Code:** 200 OK <br />
+  	  **Content:** `{ "error": false, "message": "The server has been started successfully"}`
 	
-OR 
- * **Code:** 200 OK <br />
-    **Content:** `{ "error": false, "message": "The server has been stopped successfully"}`
+	OR 
+ 	* **Code:** 200 OK <br />
+  	  **Content:** `{ "error": false, "message": "The server has been stopped successfully"}`
  
  
 * **Error Response:**
 
- * **Code:** 400 BAD Request <br />
-    **Content:** `{ "error": true, "message": "The server could not be restarted."}`
+	 * **Code:** 400 BAD Request <br />
+  	  **Content:** `{ "error": true, "message": "The server could not be restarted."}`
 
-OR 
+	OR 
  
- * **Code:** 400 BAD Request <br />
-    **Content:** `{ "error": true, "message": "The server could not be started."}`
+ 	* **Code:** 400 BAD Request <br />
+  	  **Content:** `{ "error": true, "message": "The server could not be started."}`
 	
-OR 
- * **Code:** 400 BAD Request <br />
-    **Content:** `{ "error": true, "message": "The server could not be stopped."}`
+	OR 
+	 * **Code:** 400 BAD Request <br />
+  	  **Content:** `{ "error": true, "message": "The server could not be stopped."}`
 
 * **Sample Call:**
   ```curl
