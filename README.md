@@ -35,8 +35,11 @@
    **Required:**
  
    `username=[string]`
+   
    `email=[string]`
+   
    `password=[string]`
+   
 
 
 * **Success Response:**
