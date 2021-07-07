@@ -9,25 +9,27 @@ header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-if(!empty($_GET['method'])){
-	$database = new Database();
-	$db = $database->getConnection();
+
 
 	if($_SERVER['REQUEST_METHOD'] === 'POST'){
-			if(!empty($_GET['username']) AND !empty($_GET['email']) AND !empty($_GET['password'])){
-				if (filter_var($_GET['email'], FILTER_VALIDATE_EMAIL)) {
+			if(!empty($_POST['username']) AND !empty($_POST['email']) AND !empty($_POST['password'])){
+				if (filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+					
+					$database = new Database();
+					$db = $database->getConnection();
+					
 					$query = "SELECT NULL FROM users WHERE username=:username OR email=:email";
 					$stmt = $db->prepare($query);
-					$stmt->bindParam(":username", $_GET['username']);
-					$stmt->bindParam(":email", $_GET['email']);
+					$stmt->bindParam(":username", $_POST['username']);
+					$stmt->bindParam(":email", $_POST['email']);
 					$stmt->execute();
 								
 					if ($stmt->rowCount() == 0) {
 						$query = "INSERT INTO users SET username=:username, email=:email, password=:password, registrationDate=:registrationDate";
 						$stmt = $db->prepare($query);
-						$stmt->bindParam(':username', $_GET['username']);
-						$stmt->bindParam(':email', $_GET['email']);
-						$password_hash = password_hash($_GET['password'], PASSWORD_BCRYPT);
+						$stmt->bindParam(':username', $_POST['username']);
+						$stmt->bindParam(':email', $_POST['email']);
+						$password_hash = password_hash($_POST['password'], PASSWORD_BCRYPT);
 						$stmt->bindParam(':password', $password_hash);
 						$registrationDate = time();
 						$stmt->bindParam(':registrationDate', $registrationDate);
