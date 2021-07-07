@@ -16,25 +16,26 @@ header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-	$database = new Database();
-	$db = $database->getConnection();
-
 	if($_SERVER['REQUEST_METHOD'] === 'POST'){
-			if((!empty($_GET['username']) OR !empty($_GET['email'])) AND !empty($_GET['password'])){
-				if (!empty($_GET['username'])) { // log in with username
+			if((!empty($_POST['username']) OR !empty($_POST['email'])) AND !empty($_POST['password'])){
+				
+				$database = new Database();
+				$db = $database->getConnection();
+
+				if (!empty($_POST['username'])) { // log in with username
 					$query = "SELECT * FROM users WHERE username=:username";
 					$stmt = $db->prepare($query);
-					$stmt->bindParam(":username", $_GET['username']);
+					$stmt->bindParam(":username", $_POST['username']);
 				} else { // log in with email address
 					$query = "SELECT * FROM users WHERE email=:email";
 					$stmt = $db->prepare($query);
-					$stmt->bindParam(":email", $_GET['email']);
+					$stmt->bindParam(":email", $_POST['email']);
 				}
 				
 				$stmt->execute();
 				if ($stmt->rowCount() == 1) {
 					$row = $stmt->fetch(PDO::FETCH_ASSOC);
-					if (password_verify($_GET['password'], $row['password'])) {
+					if (password_verify($_POST['password'], $row['password'])) {
 						
 						$issuer_claim = "CLOUDCOMPUTING";
 						$audience_claim = "USER";
