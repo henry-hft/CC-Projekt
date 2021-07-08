@@ -1,6 +1,5 @@
 {
-  "name": "cloudcomputing",
-  "type": "project",
+  "name": "cloud-computing",
   "description": "Universal Cloud-Provider API",
   "require": {
     "php": "~7.3.0"
