@@ -1,4 +1,7 @@
 {
+  "name": "henry-hft/CC-Projekt",
+  "type": "project",
+  "description": "Universal Cloud-Provider API",
   "require": {
     "php": "~7.3.0"
   }
