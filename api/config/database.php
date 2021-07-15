@@ -13,15 +13,11 @@ class Database
     {
         $this->conn = null;
     
-        while (list($var,$value) = each ($_ENV)) {
-            echo "$var => $value <br />";
-        }
-        
         if (getenv("SQL_HOST") && getenv("SQL_DATABASE") && getenv("SQL_USER") && getenv("SQL_PASSWORD")) {
-             $host = getenv("SQL_HOST");
-             $db_name = getenv("SQL_DATABASE");
-             $username = getenv("SQL_USER");
-             $password = getenv("SQL_PASSWORD");
+             $this->host = getenv("SQL_HOST");
+             $this->db_name = getenv("SQL_DATABASE");
+             $this->username = getenv("SQL_USER");
+             $this->password = getenv("SQL_PASSWORD");
         }
         
         try {
