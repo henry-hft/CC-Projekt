@@ -1,4 +1,6 @@
 {
+  "name":"henry-hft/cc-projekt",
+  "description":"Multi-Cloud API",
   "require": {
     "php": "~7.3.0",
     "ext-json": "*",
