@@ -21,9 +21,6 @@ class Database
         }
         
         try {
-            echo "mysql:host=" . $this->host . ";dbname=" . $this->db_name,
-                $this->username,
-                $this->password;
             $this->conn = new PDO(
                 "mysql:host=" . $this->host . ";dbname=" . $this->db_name,
                 $this->username,
