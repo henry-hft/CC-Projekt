@@ -2,10 +2,17 @@
 class Database
 {
     // specify database credentials
-    private $host = "localhost";
-    private $db_name = "cloud";
-    private $username = "user";
-    private $password = "test";
+    if (getenv("SQL_HOST") && getenv("SQL_DATABASE") && getenv("SQL_USER") && getenv("SQL_PASSWORD")) {
+        private $host = getenv("SQL_HOST");
+        private $db_name = getenv("SQL_DATABASE");
+        private $username = getenv("SQL_USER");
+        private $password = getenv("SQL_PASSWORD");
+    } else {
+        private $host = "localhost";
+        private $db_name = "cloud";
+        private $username = "user";
+        private $password = "test";
+    }
     public $conn;
 
     // get the database connection
